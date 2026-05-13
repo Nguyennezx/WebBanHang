@@ -1,12 +1,9 @@
 package com.webbanhang.repository;
-
-
-import com.webbanhang.model.Product;
-import com.webbanhang.model.Users;
-
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.webbanhang.model.Users;
 
 import java.util.List;
 
@@ -21,7 +18,6 @@ public class UserRepository {
 				  .getCurrentSession()
 				  .createQuery("FROM Users", Users.class)
 				  .list();
-				  
 	   }
 	   
 	   public void save(Users user) {
@@ -43,7 +39,7 @@ public class UserRepository {
 	   public Users findByUsername(String username) {
 		    return sessionFactory
 		    	   .getCurrentSession()
-		    	   .createQuery("FROM Users u WHERE u.username = :username", Users.class)
+		    	   .createQuery("FROM Users u WHERE u.userName = :username", Users.class)
 		    	   .setParameter("username", username)
 		    	   .uniqueResult();
 	   }
@@ -58,7 +54,7 @@ public class UserRepository {
 	   
 	   public boolean existsByUsername(String username) {
 		   Long count = sessionFactory.getCurrentSession()
-	                .createQuery("SELECT COUNT(u) FROM User u WHERE u.username = :username", Long.class)
+	                .createQuery("SELECT COUNT(u) FROM Users u WHERE u.userName = :username", Long.class)
 	                .setParameter("username", username)
 	                .uniqueResult();
 	        return count != null && count > 0;
@@ -66,7 +62,7 @@ public class UserRepository {
 	   
 	   public boolean existsByEmail(String email) {
 		   Long count = sessionFactory.getCurrentSession()
-	                .createQuery("SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class)
+	                .createQuery("SELECT COUNT(u) FROM Users u WHERE u.email = :email", Long.class)
 	                .setParameter("email", email)
 	                .uniqueResult();
 	        return count != null && count > 0;

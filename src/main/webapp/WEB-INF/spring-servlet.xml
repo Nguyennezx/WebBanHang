@@ -33,7 +33,7 @@
     <!-- DB -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
-        <property name="url" value="jdbc:sqlserver://localhost:1433;databaseName=WebBanHangNBH"/>
+        <property name="url" value="jdbc:sqlserver://localhost;databaseName=WebBanHangNBH;encrypt=true;trustServerCertificate=true"/>
         <property name="username" value="sa"/>
         <property name="password" value="123456"/>
     </bean>
@@ -58,5 +58,27 @@
     </bean>
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
-
+    
+    <mvc:interceptors>
+    <bean class="com.webbanhang.interceptor.AuthInterceptor"/>
+    </mvc:interceptors>
+    <!-- Mail Sender -->
+     <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.gmail.com"/>
+    <property name="port" value="587"/>
+    <property name="username" value="nguyenloz1292005@gmail.com"/>
+    <property name="password" value="lltgawjmdrkdsopy"/>
+    <property name="javaMailProperties">
+        <props>
+            <prop key="mail.smtp.auth">true</prop>
+            <prop key="mail.smtp.starttls.enable">true</prop>
+        </props>
+    </property>
+</bean>
+      <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+    <property name="prefix" value="/WEB-INF/views/"/>
+    <property name="suffix" value=".jsp"/>
+    <property name="contentType" value="text/html;charset=UTF-8"/>
+</bean>
 </beans>
+
