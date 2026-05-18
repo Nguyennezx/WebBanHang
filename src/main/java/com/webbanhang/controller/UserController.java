@@ -5,9 +5,11 @@ import com.webbanhang.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/profile")
@@ -28,15 +30,23 @@ public class UserController {
     
     //CAP NHAT THONG TIN
     @PostMapping("/update")
-    public String updateProfile(@RequestParam("fullName") String fullName,
-    	                    	@RequestParam("phone") String phone,
-                                @RequestParam("email") String email,
-                                ModelMap model,
-                                HttpSession session) {
-    	Users loggedInUser = (Users) session.getAttribute("loggedInUser");
-    	loggedInUser.setFullName(fullName.trim());
-    	loggedInUser.setPhone(phone.trim());
-    	loggedInUser.setEmail(email.trim());
+    public String updateProfile(@Valid @ModelAttribute("loggedInUser") Users userForm,
+                                BindingResult result,
+                                HttpSession session,
+                                ModelMap model) {
+    	 Users loggedInUser = (Users) session.getAttribute("loggedInUser");
+
+    	
+    	 if (result.hasErrors()) {
+    	   	  model.addAttribute("user", loggedInUser);
+              model.addAttribute("validationErrors", result.getAllErrors());
+    	        return "user/profile";
+    	    }
+
+    	
+    	loggedInUser.setFullName(userForm.getFullName().trim());
+    	loggedInUser.setPhone(userForm.getPhone().trim());
+    	loggedInUser.setEmail(userForm.getEmail().trim());
     	userService.updateProfile(loggedInUser);
     	
     	// Cập nhật lại session

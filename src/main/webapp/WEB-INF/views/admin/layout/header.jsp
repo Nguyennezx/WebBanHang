@@ -1,5 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -255,7 +255,7 @@
                 <li><a href="/WebBanHang/admin/products"><span class="icon">📦</span>Sản phẩm</a></li>
                 <li><a href="/WebBanHang/admin/categories"><span class="icon">📂</span>Danh mục</a></li>
                 <li><a href="/WebBanHang/admin/brands"><span class="icon">🏷️</span>Thương hiệu</a></li>
-                <li><a href="/WebBanHang/admin/user"><span class="icon">🏷️</span>Người Dùng</a></li>
+                <li><a href="/WebBanHang/admin/users"><span class="icon">🏷️</span>Người Dùng</a></li>
                 <li><a href="/WebBanHang/products"><span class="icon">👁️</span>Xem website</a></li>
                 
             </ul>

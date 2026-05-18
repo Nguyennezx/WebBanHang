@@ -126,6 +126,14 @@
             <c:if test="${not empty error}">
                 <div class="alert alert-danger"><i class="bi bi-exclamation-circle me-1"></i> ${error}</div>
             </c:if>
+            <c:if test="${not empty validationErrors}">
+                  <div class="alert alert-danger">
+                   <c:forEach items="${validationErrors}" var="err">
+                  <div>${err.defaultMessage}</div>
+             </c:forEach>
+
+    </div>
+</c:if>
 
             <form action="${pageContext.request.contextPath}/register" method="post">
 

@@ -1,6 +1,11 @@
 package com.webbanhang.model;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -13,18 +18,30 @@ public class Users {
 	@Column(name = "user_id")
 	private Integer userId;
 	
+	@NotBlank(message = "Tên đăng nhập không được trống")
 	@Column(name="username", nullable = false , unique = true ,length= 50)
 	private String userName;
 	
+	@NotBlank(message = "Email không được để trống ")
+	@Email(regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$", 
+		       message = "Email không đúng định dạng (Ví dụ: abc@gmail.com)")
 	@Column(name="email", nullable = false , unique = true ,length= 100)
 	private String email;
 	
+	@Size(min = 6, message = "Mật khẩu ít nhất 6 ký tự")
 	@Column(name = "password", nullable = false, length = 255)
     private String password;
 	
+	@Pattern(
+			regexp = "^[\\p{L} ]+$",
+		    message = "Họ tên chỉ được chứa chữ cái")
 	@Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 	
+	@Pattern(
+		    regexp = "^\\d{10}$",
+		    message = "Số điện thoại phải đúng 10 chữ số"
+		)
 	@Column(name = "phone", length = 20)
 	private String phone;
 	
