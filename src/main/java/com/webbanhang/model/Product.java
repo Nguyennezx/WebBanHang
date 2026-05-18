@@ -13,14 +13,14 @@ public class Product {
     @Column(name = "product_id")
     private Integer productId;
 	
-	@Column(name = "product_name", nullable = false, length = 150)
+	@Column(name = "product_name",  nullable = false, length = 150)
     private String productName;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "FK_PRODUCTS_CATEGORIES"))
     private Category category;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "brand_id", foreignKey = @ForeignKey(name = "FK_PRODUCTS_BRANDS"))
     private Brand brand;
 	

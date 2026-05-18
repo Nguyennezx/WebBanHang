@@ -151,9 +151,11 @@
         </a>
 
         <!-- Search -->
-        <div class="search-bar d-flex">
-            <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm...">
-            <button class="btn-search"><i class="bi bi-search"></i></button>
+         <div class="search-bar d-flex">
+            <form action="${pageContext.request.contextPath}/products" method="get" class="d-flex w-100">
+                <input type="text" name="keyword" class="form-control" placeholder="Tìm kiếm sản phẩm..." value="${keyword != null ? keyword : ''}">
+                <button type="submit" class="btn-search"><i class="bi bi-search"></i></button>
+            </form>
         </div>
 
         <!-- Actions -->
@@ -178,7 +180,7 @@
             <c:choose>
                 <c:when test="${not empty sessionScope.loggedInUser}">
                     <div class="user-dropdown dropdown">
-                        <button class="dropdown-toggle" data-bs-toggle="dropdown">
+                        <button class="dropdown-toggle" data-bs-toggle="dropdown" onclick="return false;">
                             <i class="bi bi-person-circle"></i>
                             ${sessionScope.loggedInUser.fullName}
                         </button>
@@ -224,19 +226,56 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="${pageContext.request.contextPath}/product">
+                <a class="nav-link" href="${pageContext.request.contextPath}/products">
                     <i class="bi bi-grid me-1"></i>Sản phẩm
                 </a>
             </li>
             <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-list me-1"></i>Danh mục
-                </a>
-                <ul class="dropdown-menu">
-                    <%-- Người B sẽ truyền danh sách categories vào đây --%>
-                    <li><a class="dropdown-item" href="#">Tất cả sản phẩm</a></li>
-                </ul>
-            </li>
+    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" role="button" aria-expanded="false" onclick="return false;">
+    <i class="bi bi-list me-1"></i>Danh mục
+</a>
+       
+    <ul class="dropdown-menu">
+        <c:forEach var="cat" items="${categories}">
+            <li><a class="dropdown-item" href="${pageContext.request.contextPath}/products/category/${cat.categoryId}">${cat.categoryName}</a></li>
+        </c:forEach>
+    </ul>
+</li>
         </ul>
     </div>
 </nav>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- ✅ THÊM SCRIPT NÀY -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Xử lý dropdown thủ công
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    
+    dropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log("✅ Dropdown clicked!");
+            
+            const menu = this.nextElementSibling;
+            if (menu && menu.classList.contains('dropdown-menu')) {
+                menu.classList.toggle('show');
+                this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true');
+            }
+        });
+    });
+    
+    // Đóng dropdown khi click ngoài
+    document.addEventListener('click', function(e) {
+        dropdownToggles.forEach(toggle => {
+            if (!toggle.contains(e.target) && !toggle.nextElementSibling.contains(e.target)) {
+                toggle.nextElementSibling.classList.remove('show');
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

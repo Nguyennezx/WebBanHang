@@ -12,25 +12,28 @@ public class AuthInterceptor implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request,
 			                HttpServletResponse response,
 			                Object handler) throws Exception{
+		
+	
+		 
 		     HttpSession session = request.getSession();
 		     Users loggedInUser  = (Users) session.getAttribute("loggedInUser");
 		     String uri = request.getRequestURI();
-		     
-		 // trang admin -> role phai la admin
-		    if (uri.startsWith(request.getContextPath() + "/admin")) {
-		    	if(loggedInUser == null) {
-		    		response.sendRedirect(request.getContextPath() + "/login");
-	                return false;
+	     
+	 // trang admin -> role phai la admin
+	    if (uri.startsWith(request.getContextPath() + "/admin")) {
+	    	if(loggedInUser == null) {
+	    		response.sendRedirect(request.getContextPath() + "/login");
+                return false;
 		    	}
-		    	if (!"admin".equals(loggedInUser.getRole())) {
+	    	if (!"admin".equals(loggedInUser.getRole())) {
 	                response.sendRedirect(request.getContextPath() + "/403");
 	                return false;
 	            }
 		    }
 		    
 		 // trang can dang nhap phai co session 
-		    if (uri.contains("/cart") || uri.contains("/order")
-	                || uri.contains("/profile") || uri.contains("/checkout")
+	    if (uri.contains("/cart") || uri.contains("/order")
+                || uri.contains("/profile") || uri.contains("/checkout")
 	                || uri.contains("/notifications")) {
 	            if (loggedInUser == null) {
 	                response.sendRedirect(request.getContextPath() + "/login");

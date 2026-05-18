@@ -44,7 +44,7 @@ public class AuthController {
         if ("admin".equals(user.getRole())) {
             return "redirect:/admin/dashboard";
         }
-        return "redirect:/home";
+        return "redirect:/products";
     }
 
     //DANG KY

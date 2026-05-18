@@ -18,7 +18,7 @@
                 <h6 style="color:#fff; font-weight:600; margin-bottom:12px;">Liên kết nhanh</h6>
                 <ul class="list-unstyled" style="font-size:0.85rem;">
                     <li class="mb-1"><a href="${pageContext.request.contextPath}/home" style="color:#ccc; text-decoration:none;">Trang chủ</a></li>
-                    <li class="mb-1"><a href="${pageContext.request.contextPath}/product" style="color:#ccc; text-decoration:none;">Sản phẩm</a></li>
+                    <li class="mb-1"><a href="${pageContext.request.contextPath}/products" style="color:#ccc; text-decoration:none;">Sản phẩm</a></li>
                     <li class="mb-1"><a href="${pageContext.request.contextPath}/cart" style="color:#ccc; text-decoration:none;">Giỏ hàng</a></li>
                     <li class="mb-1"><a href="${pageContext.request.contextPath}/order/history" style="color:#ccc; text-decoration:none;">Đơn hàng của tôi</a></li>
                 </ul>

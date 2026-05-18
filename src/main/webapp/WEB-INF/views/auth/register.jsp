@@ -137,7 +137,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" name="username" class="form-control"
+                    <input type="text" name="userName" class="form-control"
                            placeholder="Nhập tên đăng nhập" value="${param.userName}" required>
                 </div>
 

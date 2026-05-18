@@ -22,6 +22,7 @@ public class UserController {
     public String showProfile(ModelMap model , HttpSession session) {
     	Users loggedInUser = (Users) session.getAttribute("loggedInUser");
     	model.addAttribute("user", loggedInUser);
+    	
     	return "user/profile";
     }
     
