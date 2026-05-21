@@ -32,11 +32,14 @@ public class CartRepository {
 	   }
 	   
 	   public List<Cart> findByUser(Integer userId){
-		   return sessionFactory.getCurrentSession()
-				   .createQuery("FROM Cart c WHERE c.user.userId = :userId",Cart.class)
-				   .setParameter("userId", userId)
-				   .list();
-	   }
+		    return sessionFactory.getCurrentSession()
+		            .createQuery(
+		                "SELECT c FROM Cart c " +
+		                "JOIN FETCH c.product " +
+		                "WHERE c.user.userId = :userId", Cart.class)
+		            .setParameter("userId", userId)
+		            .list();
+		}
 	   
 	   public Cart findByUserAndProduct(Integer userId, Integer productId) {
 	        return sessionFactory.getCurrentSession()

@@ -29,8 +29,16 @@ public class OrderRepository {
 	   }
 	   
 	   public Order findById(Integer id) {
-	       return sessionFactory.getCurrentSession().get(Order.class, id);
-	   }
+		    return sessionFactory.getCurrentSession()
+		            .createQuery(
+		                "SELECT o FROM Order o " +
+		                "JOIN FETCH o.user " +
+		                "LEFT JOIN FETCH o.orderItems oi " +
+		                "LEFT JOIN FETCH oi.product " +
+		                "WHERE o.orderId = :id", Order.class)
+		            .setParameter("id", id)
+		            .uniqueResult();
+		}
 	   
 	   
 	   public List<Order> findAll(){
