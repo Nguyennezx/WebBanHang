@@ -611,15 +611,32 @@ src="${pageContext.request.contextPath}${product.imageUrl}"
     // Thêm vào giỏ
     function addToCart() {
         const qty = document.getElementById('qty').value;
-        alert(`Thêm ${qty} sản phẩm vào giỏ hàng!`);
-        // TODO: Call API to add to cart
+        addToCartGlobal(${product.productId}, qty);
     }
 
     // Mua ngay
     function buyNow() {
         const qty = document.getElementById('qty').value;
-        alert(`Mua ${qty} sản phẩm ngay!`);
-        // TODO: Redirect to checkout
+		const contextPath = "${pageContext.request.contextPath}";
+        
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = contextPath + "/cart/add";
+        
+        const prodIdInput = document.createElement("input");
+        prodIdInput.type = "hidden";
+        prodIdInput.name = "productId";
+        prodIdInput.value = "${product.productId}";
+        
+        const qtyInput = document.createElement("input");
+        qtyInput.type = "hidden";
+        qtyInput.name = "quantity";
+        qtyInput.value = qty;
+        
+        form.appendChild(prodIdInput);
+        form.appendChild(qtyInput);
+        document.body.appendChild(form);
+        form.submit();
     }
 </script>
 <!-- ✅ THÊM SCRIPT NÀY -->
@@ -629,6 +646,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
     
     dropdownToggles.forEach(toggle => {
+        if (toggle.closest('.user-dropdown')) {
+            return;
+        }
+
         toggle.addEventListener('click', function(e) {
             e.preventDefault();
             console.log("✅ Dropdown clicked!");
@@ -644,8 +665,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Đóng dropdown khi click ngoài
     document.addEventListener('click', function(e) {
         dropdownToggles.forEach(toggle => {
-            if (!toggle.contains(e.target) && !toggle.nextElementSibling.contains(e.target)) {
-                toggle.nextElementSibling.classList.remove('show');
+            const menu = toggle.nextElementSibling;
+            if (menu && !toggle.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
                 toggle.setAttribute('aria-expanded', 'false');
             }
         });

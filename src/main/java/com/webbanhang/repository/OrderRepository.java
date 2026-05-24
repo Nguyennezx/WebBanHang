@@ -42,10 +42,10 @@ public class OrderRepository {
 	   
 	   
 	   public List<Order> findAll(){
-		   return sessionFactory.getCurrentSession()
-				  .createQuery("FROM Order",Order.class)
-				  .list();
-	   }
+	   return sessionFactory.getCurrentSession()
+			  .createQuery("SELECT o FROM Order o JOIN FETCH o.user ORDER BY o.orderDate DESC", Order.class)
+			  .list();
+   }
 	   
 	   public List<Order> findByUser(Integer userId) {
 	        return sessionFactory.getCurrentSession()
@@ -56,7 +56,7 @@ public class OrderRepository {
 	   
 	   public List<Order> findByStatus(String status) {
 	        return sessionFactory.getCurrentSession()
-	                .createQuery("FROM Order o WHERE o.status = :status ORDER BY o.orderDate DESC", Order.class)
+	                .createQuery("SELECT o FROM Order o JOIN FETCH o.user WHERE o.status = :status ORDER BY o.orderDate DESC", Order.class)
 	                .setParameter("status", status)
 	                .list();
 	    }

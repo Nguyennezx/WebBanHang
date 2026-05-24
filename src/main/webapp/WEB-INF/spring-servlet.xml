@@ -23,15 +23,12 @@
     <context:component-scan base-package="com.webbanhang"/>
 
     <mvc:annotation-driven/>
-<<<<<<< Updated upstream
     <bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver" />
 
 <mvc:resources mapping="/images/**" location="/images/" />
 
 
-=======
-	<mvc:resources mapping="/images/**" location="/images/"/>
->>>>>>> Stashed changes
+
     <!-- View -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
         <property name="prefix" value="/WEB-INF/views/"/>

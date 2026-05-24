@@ -90,6 +90,17 @@
             border-radius: 50%;
             width: 18px; height: 18px;
             display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .cart-badge.bounce {
+            animation: badgeBounce 0.4s ease-out;
+        }
+        
+        @keyframes badgeBounce {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
         }
 
         /* Dropdown user */
@@ -119,6 +130,41 @@
         }
         .main-nav .nav-link:hover { color: var(--primary); }
         .main-nav .nav-link.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 90px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .custom-toast {
+            background: #2e7d32;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+        }
+        .custom-toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .custom-toast.error {
+            background: #d32f2f;
+        }
     </style>
 </head>
 <body>
@@ -165,7 +211,7 @@
             <a href="${pageContext.request.contextPath}/cart" class="action-btn">
                 <span style="position:relative">
                     <i class="bi bi-cart3"></i>
-                    <span class="cart-badge">0</span>
+                    <span class="cart-badge">${cartSize != null ? cartSize : 0}</span>
                 </span>
                 <span>Giỏ hàng</span>
             </a>
@@ -180,7 +226,7 @@
             <c:choose>
                 <c:when test="${not empty sessionScope.loggedInUser}">
                     <div class="user-dropdown dropdown">
-                        <button class="dropdown-toggle" data-bs-toggle="dropdown" onclick="return false;">
+                        <button type="button" class="dropdown-toggle">
                             <i class="bi bi-person-circle"></i>
                             ${sessionScope.loggedInUser.fullName}
                         </button>
@@ -252,8 +298,21 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Xử lý dropdown thủ công
     const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    const userDropdownToggles = document.querySelectorAll('.user-dropdown > .dropdown-toggle');
+
+    userDropdownToggles.forEach(toggle => {
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleUserDropdown(this);
+        });
+    });
     
     dropdownToggles.forEach(toggle => {
+        if (toggle.closest('.user-dropdown')) {
+            return;
+        }
+
         toggle.addEventListener('click', function(e) {
             e.preventDefault();
             console.log("✅ Dropdown clicked!");
@@ -269,13 +328,102 @@ document.addEventListener('DOMContentLoaded', function() {
     // Đóng dropdown khi click ngoài
     document.addEventListener('click', function(e) {
         dropdownToggles.forEach(toggle => {
-            if (!toggle.contains(e.target) && !toggle.nextElementSibling.contains(e.target)) {
-                toggle.nextElementSibling.classList.remove('show');
+            const menu = toggle.nextElementSibling;
+            if (menu && !toggle.contains(e.target) && !menu.contains(e.target)) {
+                menu.classList.remove('show');
                 toggle.setAttribute('aria-expanded', 'false');
             }
         });
     });
 });
+
+function toggleUserDropdown(button) {
+    const menu = button.nextElementSibling;
+    if (menu && menu.classList.contains('dropdown-menu')) {
+        menu.classList.toggle('show');
+        button.setAttribute('aria-expanded', menu.classList.contains('show') ? 'true' : 'false');
+    }
+}
+
+// Hàm hiển thị Toast thông báo đẹp mắt
+function showToast(message, type = 'success') {
+    let container = document.getElementById("toastContainer");
+    if (!container) {
+        container = document.createElement("div");
+        container.id = "toastContainer";
+        container.className = "toast-container";
+        document.body.appendChild(container);
+    }
+    
+    const toast = document.createElement("div");
+    toast.className = "custom-toast " + (type === 'error' ? 'error' : '');
+    
+    const icon = type === 'error' 
+        ? '<i class="bi bi-exclamation-triangle-fill"></i>' 
+        : '<i class="bi bi-check-circle-fill"></i>';
+        
+    toast.innerHTML = icon + ' <span>' + message + '</span>';
+    container.appendChild(toast);
+    
+    // Trigger reflow
+    void toast.offsetWidth;
+    toast.classList.add("show");
+    
+    // Tự động ẩn sau 3 giây
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+// Hàm thêm vào giỏ hàng toàn cục dùng AJAX
+function addToCartGlobal(productId, qty) {
+    qty = qty || 1;
+    const contextPath = "${pageContext.request.contextPath}";
+    
+    // Tạo form url encoded data
+    const params = new URLSearchParams();
+    params.append("productId", productId);
+    params.append("quantity", qty);
+    
+    fetch(contextPath + "/cart/add-ajax", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+        },
+        body: params.toString()
+    })
+    .then(response => response.text())
+    .then(data => {
+        if (data === "not_logged_in") {
+            showToast("Vui lòng đăng nhập để thêm vào giỏ hàng!", "error");
+            setTimeout(() => {
+                window.location.href = contextPath + "/login";
+            }, 1000);
+        } else if (data === "product_not_found") {
+            showToast("Không tìm thấy sản phẩm này!", "error");
+        } else if (data.startsWith("success:")) {
+            const newCount = data.split(":")[1];
+            const badge = document.querySelector(".cart-badge");
+            if (badge) {
+                badge.textContent = newCount;
+                // Kích hoạt hiệu ứng bounce
+                badge.classList.remove("bounce");
+                void badge.offsetWidth; // Trigger reflow
+                badge.classList.add("bounce");
+            }
+            showToast("Đã thêm sản phẩm vào giỏ hàng thành công!");
+        } else {
+            showToast("Có lỗi xảy ra khi thêm vào giỏ hàng!", "error");
+        }
+    })
+    .catch(error => {
+        console.error("Error adding to cart:", error);
+        showToast("Lỗi kết nối hệ thống!", "error");
+    });
+}
 </script>
 </body>
 </html>

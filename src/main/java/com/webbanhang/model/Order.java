@@ -29,6 +29,12 @@ public class Order {
 	
 	@Column(name = "notes", columnDefinition = "NVARCHAR(MAX)")
     private String notes;
+
+	@Column(name = "shipping_address", columnDefinition = "NVARCHAR(500)")
+    private String shippingAddress;
+
+	@Column(name = "receiver_phone", length = 20)
+    private String receiverPhone;
 	
 	 @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 private List<OrderItem> orderItems;
@@ -87,6 +93,22 @@ public class Order {
 
 	 public void setNotes(String notes) {
 		 this.notes = notes;
+	 }
+
+	 public String getShippingAddress() {
+		 return shippingAddress;
+	 }
+
+	 public void setShippingAddress(String shippingAddress) {
+		 this.shippingAddress = shippingAddress;
+	 }
+
+	 public String getReceiverPhone() {
+		 return receiverPhone;
+	 }
+
+	 public void setReceiverPhone(String receiverPhone) {
+		 this.receiverPhone = receiverPhone;
 	 }
 
 	 public List<OrderItem> getOrderItems() {

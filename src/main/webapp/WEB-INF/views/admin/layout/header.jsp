@@ -256,6 +256,7 @@
                 <li><a href="/WebBanHang/admin/categories"><span class="icon">📂</span>Danh mục</a></li>
                 <li><a href="/WebBanHang/admin/brands"><span class="icon">🏷️</span>Thương hiệu</a></li>
                 <li><a href="/WebBanHang/admin/users"><span class="icon">🏷️</span>Người Dùng</a></li>
+                <li><a href="/WebBanHang/admin/orders"><span class="icon">📋</span>Đơn hàng</a></li>
                 <li><a href="/WebBanHang/products"><span class="icon">👁️</span>Xem website</a></li>
                 
             </ul>

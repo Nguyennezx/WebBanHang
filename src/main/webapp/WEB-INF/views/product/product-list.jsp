@@ -153,7 +153,7 @@
                                     <span class="current-price"><fmt:formatNumber value="${product.price}" type="number"/>đ</span>
                                     
                                 </div>
-                                <button class="add-to-cart-btn" onclick="event.preventDefault(); alert('Đã thêm vào giỏ!');">
+                                <button class="add-to-cart-btn" onclick="event.preventDefault(); addToCartGlobal(${product.productId}, 1);">
                                     Thêm vào giỏ
                                 </button>
                             </div>
