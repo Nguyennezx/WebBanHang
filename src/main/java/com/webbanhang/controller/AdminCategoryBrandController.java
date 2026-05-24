@@ -30,7 +30,7 @@ public class AdminCategoryBrandController {
 
     @GetMapping("/categories")
     public String listCategories(Model model) {
-        List<Category> categories = categoryBrandService.getAllCategories();
+    	List<Category> categories = categoryBrandService.getActiveCategories();
         model.addAttribute("categories", categories);
         model.addAttribute("pageTitle", "Quản lý danh mục");
         return "admin/category-list";
@@ -112,7 +112,7 @@ public class AdminCategoryBrandController {
 
     @GetMapping("/brands")
     public String listBrands(Model model) {
-        List<Brand> brands = categoryBrandService.getAllBrands();
+    	List<Brand> brands = categoryBrandService.getActiveBrands();
         model.addAttribute("brands", brands);
         model.addAttribute("pageTitle", "Quản lý thương hiệu");
         return "admin/brand-list";

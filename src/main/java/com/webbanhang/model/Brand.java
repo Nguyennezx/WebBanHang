@@ -11,7 +11,7 @@ public class Brand {
     @Column(name = "brand_id")
     private Integer brandId;
 	
-	@Column(name = "brand_name", nullable = false, unique = true, length = 100)
+	@Column(name = "brand_name", nullable = false,length = 100)
     private String brandName;
  
     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")

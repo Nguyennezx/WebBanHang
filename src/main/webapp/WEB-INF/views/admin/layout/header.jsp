@@ -262,11 +262,15 @@
         </aside>
 
         <!-- HEADER -->
+                <!-- HEADER -->
         <header class="header">
             <div class="header-title">${pageTitle != null ? pageTitle : 'Admin'}</div>
             <div class="header-user">
                 <span>👤 admin</span>
-                <button>⚙️</button>
+                <!-- Thêm nút đăng xuất trỏ tới Controller logout -->
+                <a href="${pageContext.request.contextPath}/logout" class="btn-logout">
+                    <span></span> Đăng xuất
+                </a>
             </div>
         </header>
 
