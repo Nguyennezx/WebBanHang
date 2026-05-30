@@ -18,18 +18,32 @@ public class CartService {
 
     @Transactional
     public List<Cart> getCartByUser(Integer userId) {
-        return cartRepository.findByUser(userId);
+        List<Cart> carts = cartRepository.findByUser(userId);
+        for (Cart c : carts) {
+            if (c.getProduct() != null) {
+                org.hibernate.Hibernate.initialize(c.getProduct());
+            }
+        }
+        return carts;
     }
 
     @Transactional
     public void addToCart(Users user, Product product, int quantity) {
         Cart existing = cartRepository.findByUserAndProduct(
-            user.getUserId(), product.getProductId()
-        );
+                user.getUserId(), product.getProductId());
+        int maxStock = product.getQuantityStock() != null ? product.getQuantityStock() : 0;
+
         if (existing != null) {
-            existing.setQuantity(existing.getQuantity() + quantity);
+            int newQuantity = existing.getQuantity() + quantity;
+            if (newQuantity > maxStock && !"admin".equals(user.getRole())) {
+                newQuantity = maxStock;
+            }
+            existing.setQuantity(newQuantity);
             cartRepository.update(existing);
         } else {
+            if (quantity > maxStock && !"admin".equals(user.getRole())) {
+                quantity = maxStock;
+            }
             Cart cart = new Cart();
             cart.setUser(user);
             cart.setProduct(product);
@@ -42,6 +56,10 @@ public class CartService {
     public void updateQuantity(Integer cartId, Integer quantity) {
         Cart cart = cartRepository.findById(cartId);
         if (cart != null) {
+            int maxStock = cart.getProduct().getQuantityStock() != null ? cart.getProduct().getQuantityStock() : 0;
+            if (quantity > maxStock && !"admin".equals(cart.getUser().getRole())) {
+                quantity = maxStock;
+            }
             if (quantity <= 0) {
                 cartRepository.delete(cart);
             } else {

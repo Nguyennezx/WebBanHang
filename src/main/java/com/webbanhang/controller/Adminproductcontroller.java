@@ -88,21 +88,46 @@ public class Adminproductcontroller {
 	    product.setDescription(description != null ? description : "");
 	    product.setQuantityStock(quantityStock);
 
-	    // Xử lý upload file
-	    String uploadDir = request.getServletContext().getRealPath("/images/");  // ← SỬA DÒNG NÀY
-	    
-	    // Tạo folder nếu chưa tồn tại
+	    // 1. Đường dẫn thư mục tạm của Server (để hiển thị ảnh ngay lập tức)
+	    String uploadDir = request.getServletContext().getRealPath("/images/");
 	    java.io.File uploadDirFile = new java.io.File(uploadDir);
 	    if (!uploadDirFile.exists()) {
 	        uploadDirFile.mkdirs();
+	    }
+	    
+	    // 2. Tự động tìm đường dẫn thư mục gốc Workspace (để lưu giữ ảnh vĩnh viễn)
+	    String realPath = request.getServletContext().getRealPath("/");
+	    String projectSourceDir = realPath.replace(
+	        java.io.File.separator + ".metadata" + java.io.File.separator + ".plugins" + java.io.File.separator + "org.eclipse.wst.server.core" + java.io.File.separator + "tmp0" + java.io.File.separator + "wtpwebapps" + java.io.File.separator + "WebBanHang" + java.io.File.separator,
+	        java.io.File.separator + "WebBanHang" + java.io.File.separator + "src" + java.io.File.separator + "main" + java.io.File.separator + "webapp" + java.io.File.separator
+	    );
+	    String backupDir = projectSourceDir + "images/";
+	    java.io.File backupDirFile = new java.io.File(backupDir);
+	    if (!backupDirFile.exists()) {
+	        backupDirFile.mkdirs();
 	    }
 	    
 	    String imageUrl = "/images/placeholder.jpg";
 	    if (imageFile != null && !imageFile.isEmpty()) {
 	        try {
 	            String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-	            String uploadPath = uploadDir + "/" + fileName;
-	            imageFile.transferTo(new java.io.File(uploadPath));
+	            
+	            // Bước A: Lưu file vào thư mục tạm trên Server (để hiện ngay trên Web)
+	            String uploadPath = uploadDir + java.io.File.separator + fileName;
+	            java.io.File serverFile = new java.io.File(uploadPath);
+	            imageFile.transferTo(serverFile);
+	            
+	            // Bước B: Sao lưu vào thư mục gốc Workspace (giúp giữ ảnh vĩnh viễn)
+	            if (realPath.contains(".metadata")) { // Chỉ thực hiện khi chạy local trên Eclipse
+	                String backupPath = backupDir + fileName;
+	                java.io.File backupFile = new java.io.File(backupPath);
+	                java.nio.file.Files.copy(
+	                    serverFile.toPath(), 
+	                    backupFile.toPath(), 
+	                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+	                );
+	            }
+	            
 	            imageUrl = "/images/" + fileName;
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -205,21 +230,46 @@ public class Adminproductcontroller {
 	    product.setDescription(description != null ? description : "");
 	    product.setQuantityStock(quantityStock);
 
-	    // Xử lý upload file
-	    String uploadDir = request.getServletContext().getRealPath("/images/");  // ← SỬA DÒNG NÀY
-	    
-	    // Tạo folder nếu chưa tồn tại
+	    // 1. Đường dẫn thư mục tạm của Server (để hiển thị ảnh ngay lập tức)
+	    String uploadDir = request.getServletContext().getRealPath("/images/");
 	    java.io.File uploadDirFile = new java.io.File(uploadDir);
 	    if (!uploadDirFile.exists()) {
 	        uploadDirFile.mkdirs();
+	    }
+	    
+	    // 2. Tự động tìm đường dẫn thư mục gốc Workspace (để lưu giữ ảnh vĩnh viễn)
+	    String realPath = request.getServletContext().getRealPath("/");
+	    String projectSourceDir = realPath.replace(
+	        java.io.File.separator + ".metadata" + java.io.File.separator + ".plugins" + java.io.File.separator + "org.eclipse.wst.server.core" + java.io.File.separator + "tmp0" + java.io.File.separator + "wtpwebapps" + java.io.File.separator + "WebBanHang" + java.io.File.separator,
+	        java.io.File.separator + "WebBanHang" + java.io.File.separator + "src" + java.io.File.separator + "main" + java.io.File.separator + "webapp" + java.io.File.separator
+	    );
+	    String backupDir = projectSourceDir + "images/";
+	    java.io.File backupDirFile = new java.io.File(backupDir);
+	    if (!backupDirFile.exists()) {
+	        backupDirFile.mkdirs();
 	    }
 	    
 	    String imageUrl = product.getImageUrl(); // Giữ ảnh cũ
 	    if (imageFile != null && !imageFile.isEmpty()) {
 	        try {
 	            String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-	            String uploadPath = uploadDir + "/" + fileName;
-	            imageFile.transferTo(new java.io.File(uploadPath));
+	            
+	            // Bước A: Lưu file vào thư mục tạm trên Server (để hiện ngay trên Web)
+	            String uploadPath = uploadDir + java.io.File.separator + fileName;
+	            java.io.File serverFile = new java.io.File(uploadPath);
+	            imageFile.transferTo(serverFile);
+	            
+	            // Bước B: Sao lưu vào thư mục gốc Workspace (giúp giữ ảnh vĩnh viễn)
+	            if (realPath.contains(".metadata")) { // Chỉ thực hiện khi chạy local trên Eclipse
+	                String backupPath = backupDir + fileName;
+	                java.io.File backupFile = new java.io.File(backupPath);
+	                java.nio.file.Files.copy(
+	                    serverFile.toPath(), 
+	                    backupFile.toPath(), 
+	                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+	                );
+	            }
+	            
 	            imageUrl = "/images/" + fileName;
 	        } catch (Exception e) {
 	            e.printStackTrace();

@@ -31,7 +31,21 @@ public class OrderService {
     // Lấy chi tiết đơn hàng
     @Transactional
     public Order getOrderById(Integer orderId) {
-        return orderRepository.findById(orderId);
+        Order order = orderRepository.findById(orderId);
+        if (order != null) {
+            if (order.getUser() != null) {
+                org.hibernate.Hibernate.initialize(order.getUser());
+            }
+            if (order.getOrderItems() != null) {
+                org.hibernate.Hibernate.initialize(order.getOrderItems());
+                for (OrderItem item : order.getOrderItems()) {
+                    if (item.getProduct() != null) {
+                        org.hibernate.Hibernate.initialize(item.getProduct());
+                    }
+                }
+            }
+        }
+        return order;
     }
 
     // Lấy danh sách sản phẩm trong đơn hàng
@@ -73,14 +87,14 @@ public class OrderService {
         for (Cart item : cartItems) {
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
-            
+
             com.webbanhang.model.Product product = item.getProduct();
             orderItem.setProduct(product);
             orderItem.setQuantity(item.getQuantity());
             // Lưu giá tại thời điểm đặt hàng
             orderItem.setPrice(product.getPrice());
             orderRepository.saveOrderItem(orderItem);
-            
+
             // Trừ số lượng kho nếu không phải là admin
             if (!isAdmin) {
                 int newQuantity = product.getQuantityStock() - item.getQuantity();
@@ -88,8 +102,9 @@ public class OrderService {
                     newQuantity = 0; // Đảm bảo số lượng không bị âm
                 }
                 product.setQuantityStock(newQuantity);
-                // Vì product đang ở trạng thái persistent trong session của Hibernate, 
-                // việc thay đổi thuộc tính sẽ tự động được cập nhật xuống DB khi Transaction commit,
+                // Vì product đang ở trạng thái persistent trong session của Hibernate,
+                // việc thay đổi thuộc tính sẽ tự động được cập nhật xuống DB khi Transaction
+                // commit,
                 // hoặc có thể gọi tường minh productRepository.update(product) nếu cần.
             }
         }
@@ -100,16 +115,32 @@ public class OrderService {
         return order;
     }
 
-    // Lấy tất cả đơn hàng
+    // (Dành cho Admin) Lấy toàn bộ đơn hàng
     @Transactional
     public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+        List<Order> orders = orderRepository.findAll();
+        if (orders != null) {
+            for (Order order : orders) {
+                if (order.getUser() != null) {
+                    org.hibernate.Hibernate.initialize(order.getUser());
+                }
+            }
+        }
+        return orders;
     }
 
-    // Lấy danh sách đơn theo trạng thái
+    // (Dành cho Admin) Lọc đơn hàng theo trạng thái
     @Transactional
     public List<Order> getOrdersByStatus(String status) {
-        return orderRepository.findByStatus(status);
+        List<Order> orders = orderRepository.findByStatus(status);
+        if (orders != null) {
+            for (Order order : orders) {
+                if (order.getUser() != null) {
+                    org.hibernate.Hibernate.initialize(order.getUser());
+                }
+            }
+        }
+        return orders;
     }
 
     // Cập nhật trạng thái đơn hàng (Admin)
@@ -119,8 +150,8 @@ public class OrderService {
         if (order != null) {
             String currentStatus = order.getStatus();
             // Chỉ cho phép chuyển từ pending -> confirmed hoặc cancelled
-            if (currentStatus.equals("pending") && 
-                (newStatus.equals("confirmed") || newStatus.equals("cancelled"))) {
+            if (currentStatus.equals("pending") &&
+                    (newStatus.equals("confirmed") || newStatus.equals("cancelled"))) {
                 order.setStatus(newStatus);
                 orderRepository.update(order);
                 return true;

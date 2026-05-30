@@ -51,10 +51,10 @@ public class OrderController {
     // ========== ĐẶT HÀNG ==========
     @PostMapping("/place")
     public String placeOrder(@RequestParam String shippingAddress,
-                             @RequestParam String receiverPhone,
-                             @RequestParam(required = false) String notes,
-                             HttpSession session,
-                             Model model) {
+            @RequestParam String receiverPhone,
+            @RequestParam(required = false) String notes,
+            HttpSession session,
+            Model model) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
 
@@ -97,9 +97,32 @@ public class OrderController {
         }
 
         // Kiểm tra giỏ hàng có trống không
-        if (cartService.getCartByUser(user.getUserId()).isEmpty()) {
+        List<com.webbanhang.model.Cart> cartItems = cartService.getCartByUser(user.getUserId());
+        if (cartItems.isEmpty()) {
             model.addAttribute("error", "Giỏ hàng trống!");
             return "order/checkout";
+        }
+
+        // Kiểm tra tồn kho trước khi đặt hàng (nếu không phải là admin)
+        if (!"admin".equals(user.getRole())) {
+            for (com.webbanhang.model.Cart item : cartItems) {
+                int stock = item.getProduct().getQuantityStock() != null ? item.getProduct().getQuantityStock() : 0;
+                if (item.getQuantity() > stock) {
+                    model.addAttribute("error", "Sản phẩm [" + item.getProduct().getProductName() + "] chỉ còn " + stock
+                            + " cái trong kho! Vui lòng quay lại giỏ hàng để cập nhật số lượng.");
+                    model.addAttribute("cartItems", cartItems);
+
+                    double total = 0;
+                    for (var c : cartItems) {
+                        total += c.getProduct().getPrice().doubleValue() * c.getQuantity();
+                    }
+                    model.addAttribute("total", total);
+                    model.addAttribute("shippingAddress", shippingAddress);
+                    model.addAttribute("receiverPhone", receiverPhone);
+                    model.addAttribute("notes", notes);
+                    return "order/checkout";
+                }
+            }
         }
 
         Order order = orderService.placeOrder(user, shippingAddress.trim(), receiverPhone.trim(), notes);
@@ -128,14 +151,18 @@ public class OrderController {
         return "order/order-list";
     }
 
+    @Autowired
+    private com.webbanhang.service.PaymentService paymentService;
+
     // ========== CHI TIẾT ĐƠN HÀNG ==========
     @GetMapping("/detail/{orderId}")
     public String orderDetail(@PathVariable Integer orderId,
-                              HttpSession session,
-                              Model model) {
+            HttpSession session,
+            Model model) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
-        if (user == null) return "redirect:/login";
+        if (user == null)
+            return "redirect:/login";
 
         Order order = orderService.getOrderById(orderId);
 
@@ -147,13 +174,17 @@ public class OrderController {
         // ✅ Dùng luôn từ order đã load sẵn
         model.addAttribute("orderItems", order.getOrderItems());
 
+        // Kiểm tra xem đơn đã thanh toán chưa
+        com.webbanhang.model.Payment payment = paymentService.getPaymentByOrder(orderId);
+        model.addAttribute("payment", payment);
+
         return "order/order-detail";
     }
 
     // ========== HỦY ĐƠN HÀNG ==========
     @PostMapping("/cancel")
     public String cancelOrder(@RequestParam Integer orderId,
-                              HttpSession session) {
+            HttpSession session) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
 

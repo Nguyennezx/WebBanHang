@@ -39,7 +39,7 @@ public class CartController {
         double total = 0;
         for (Cart item : cartItems) {
             total += item.getProduct().getPrice().doubleValue()
-                     * item.getQuantity();
+                    * item.getQuantity();
         }
 
         model.addAttribute("cartItems", cartItems);
@@ -50,8 +50,8 @@ public class CartController {
     // ========== THÊM VÀO GIỎ ==========
     @PostMapping("/add")
     public String addToCart(@RequestParam Integer productId,
-                            @RequestParam(defaultValue = "1") Integer quantity,
-                            HttpSession session) {
+            @RequestParam(defaultValue = "1") Integer quantity,
+            HttpSession session) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
 
@@ -71,8 +71,8 @@ public class CartController {
     @PostMapping(value = "/add-ajax", produces = "text/plain;charset=UTF-8")
     @ResponseBody
     public String addToCartAjax(@RequestParam Integer productId,
-                                @RequestParam(defaultValue = "1") Integer quantity,
-                                HttpSession session) {
+            @RequestParam(defaultValue = "1") Integer quantity,
+            HttpSession session) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
 
@@ -83,7 +83,7 @@ public class CartController {
         Product product = productService.getProductById(productId);
         if (product != null) {
             cartService.addToCart(user, product, quantity);
-            
+
             List<Cart> cartItems = cartService.getCartByUser(user.getUserId());
             int cartSize = 0;
             if (cartItems != null) {
@@ -100,8 +100,8 @@ public class CartController {
     // ========== CẬP NHẬT SỐ LƯỢNG ==========
     @PostMapping("/update")
     public String updateCart(@RequestParam Integer cartId,
-                             @RequestParam Integer quantity,
-                             HttpSession session) {
+            @RequestParam Integer quantity,
+            HttpSession session) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
 
@@ -116,7 +116,7 @@ public class CartController {
     // ========== XÓA 1 SẢN PHẨM ==========
     @PostMapping("/remove")
     public String removeItem(@RequestParam Integer cartId,
-                             HttpSession session) {
+            HttpSession session) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
 
@@ -132,7 +132,7 @@ public class CartController {
     @PostMapping(value = "/remove-ajax", produces = "text/plain;charset=UTF-8")
     @ResponseBody
     public String removeItemAjax(@RequestParam Integer cartId,
-                                 HttpSession session) {
+            HttpSession session) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
 
@@ -153,5 +153,23 @@ public class CartController {
         }
 
         return "success:" + cartSize + ":" + total;
+    }
+
+    // ========== LẤY SỐ LƯỢNG GIỎ HÀNG QUA AJAX ==========
+    @GetMapping(value = "/count-ajax", produces = "text/plain;charset=UTF-8")
+    @ResponseBody
+    public String getCartCountAjax(HttpSession session) {
+        Users user = (Users) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "0";
+        }
+        List<Cart> cartItems = cartService.getCartByUser(user.getUserId());
+        int cartSize = 0;
+        if (cartItems != null) {
+            for (Cart item : cartItems) {
+                cartSize += item.getQuantity();
+            }
+        }
+        return String.valueOf(cartSize);
     }
 }

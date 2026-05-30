@@ -32,6 +32,9 @@ public class AdminOrderController {
         return "admin/order-list";
     }
 
+    @Autowired
+    private com.webbanhang.service.PaymentService paymentService;
+
     // Chi tiết đơn hàng
     @GetMapping("/{id}")
     public String orderDetail(@PathVariable("id") Integer id, ModelMap model) {
@@ -40,17 +43,20 @@ public class AdminOrderController {
             return "redirect:/admin/orders";
         }
         List<OrderItem> orderItems = order.getOrderItems();
-        
+
+        com.webbanhang.model.Payment payment = paymentService.getPaymentByOrder(id);
+
         model.addAttribute("order", order);
         model.addAttribute("orderItems", orderItems);
+        model.addAttribute("payment", payment);
         return "admin/order-detail";
     }
 
     // Cập nhật trạng thái đơn hàng
     @PostMapping("/{id}/update-status")
     public String updateStatus(@PathVariable("id") Integer id,
-                               @RequestParam("status") String status,
-                               ModelMap model) {
+            @RequestParam("status") String status,
+            ModelMap model) {
         boolean updated = orderService.updateStatus(id, status);
         if (updated) {
             return "redirect:/admin/orders/" + id + "?success=true";

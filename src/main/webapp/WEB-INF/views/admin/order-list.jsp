@@ -1,192 +1,209 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
+    <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+        <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+            <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
 
-    .orders-wrap {
-        padding: 32px 28px;
-        font-family: 'Be Vietnam Pro', sans-serif;
-    }
+                <!-- Nạp Bootstrap CSS vì trang này dùng class của Bootstrap -->
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+                    rel="stylesheet">
 
-    .orders-page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-        margin-bottom: 24px;
-    }
+                <style>
+                    :root {
+                        --primary: #1a73e8;
+                        --primary-dark: #0d47a1;
+                    }
 
-    .orders-page-header h4 {
-        font-size: 20px;
-        font-weight: 700;
-        color: #111827;
-        margin: 0 0 4px;
-        letter-spacing: -0.3px;
-    }
+                    .list-wrapper {
+                        padding: 20px;
+                    }
 
-    .orders-page-header .subtitle {
-        font-size: 13px;
-        color: #6b7280;
-        font-weight: 400;
-    }
+                    .page-title {
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: var(--primary-dark);
+                        margin-bottom: 20px;
+                    }
 
-    /* Tabs Filter */
-    .filter-tabs {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 20px;
-    }
+                    .order-card {
+                        background: #fff;
+                        border-radius: 12px;
+                        padding: 20px 24px;
+                        margin-bottom: 14px;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        transition: box-shadow 0.2s;
+                    }
 
-    .filter-tab {
-        padding: 8px 16px;
-        background: #f3f4f6;
-        color: #4b5563;
-        border-radius: 8px;
-        font-size: 13px;
-        font-weight: 600;
-        text-decoration: none;
-        transition: all .2s;
-    }
+                    .order-card:hover {
+                        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+                    }
 
-    .filter-tab:hover {
-        background: #e5e7eb;
-    }
+                    .order-id {
+                        font-weight: 700;
+                        color: var(--primary);
+                        font-size: 0.95rem;
+                    }
 
-    .filter-tab.active {
-        background: #3b82f6;
-        color: #fff;
-    }
+                    .order-date {
+                        font-size: 0.82rem;
+                        color: #888;
+                        margin-top: 4px;
+                    }
 
-    /* Table card */
-    .orders-card {
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid #e5e7eb;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-        overflow: hidden;
-    }
+                    .order-amount {
+                        font-weight: 700;
+                        color: #e53935;
+                        font-size: 1.05rem;
+                    }
 
-    .orders-card table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13.5px;
-    }
+                    .badge-status {
+                        padding: 5px 12px;
+                        border-radius: 20px;
+                        font-size: 0.8rem;
+                        font-weight: 600;
+                    }
 
-    .orders-card thead tr {
-        background: #f9fafb;
-        border-bottom: 1px solid #e5e7eb;
-    }
+                    .badge-pending {
+                        background: #fff8e1;
+                        color: #f57f17;
+                    }
 
-    .orders-card thead th {
-        padding: 11px 16px;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #6b7280;
-        text-align: left;
-    }
+                    .badge-confirmed {
+                        background: #e8f5e9;
+                        color: #2e7d32;
+                    }
 
-    .orders-card tbody td {
-        padding: 14px 16px;
-        border-bottom: 1px solid #f3f4f6;
-        color: #374151;
-        vertical-align: middle;
-    }
+                    .badge-cancelled {
+                        background: #fdecea;
+                        color: #c62828;
+                    }
 
-    .orders-card tbody tr:hover { background: #fafafa; }
+                    .btn-detail {
+                        background: var(--primary);
+                        color: #fff;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 7px 18px;
+                        font-size: 0.85rem;
+                        text-decoration: none;
+                        transition: background 0.2s;
+                    }
 
-    /* status badge */
-    .status-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 11.5px;
-        font-weight: 600;
-    }
+                    .btn-detail:hover {
+                        background: var(--primary-dark);
+                        color: #fff;
+                    }
 
-    .status-badge.pending { background: #fef9c3; color: #a16207; }
-    .status-badge.confirmed { background: #dbeafe; color: #1d4ed8; }
-    .status-badge.cancelled { background: #fee2e2; color: #b91c1c; }
+                    .empty-order {
+                        background: #fff;
+                        border-radius: 12px;
+                        padding: 60px 20px;
+                        text-align: center;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+                    }
 
-    .action-btn {
-        padding: 6px 12px;
-        border-radius: 6px;
-        background: #eff6ff;
-        color: #2563eb;
-        font-size: 12px;
-        font-weight: 600;
-        text-decoration: none;
-        border: 1px solid #bfdbfe;
-        transition: all .2s;
-    }
-    
-    .action-btn:hover {
-        background: #dbeafe;
-    }
-</style>
+                    .empty-order i {
+                        font-size: 4rem;
+                        color: #ccc;
+                        margin-bottom: 16px;
+                    }
 
-<div class="orders-wrap">
-    <div class="orders-page-header">
-        <div>
-            <h4>📋 Quản lý đơn hàng</h4>
-            <span class="subtitle">Theo dõi và cập nhật trạng thái đơn hàng</span>
-        </div>
-    </div>
+                    .empty-order p {
+                        color: #888;
+                        margin-bottom: 20px;
+                    }
 
-    <div class="filter-tabs">
-        <a href="${pageContext.request.contextPath}/admin/orders" class="filter-tab ${currentStatus == 'all' ? 'active' : ''}">Tất cả</a>
-        <a href="${pageContext.request.contextPath}/admin/orders?status=pending" class="filter-tab ${currentStatus == 'pending' ? 'active' : ''}">Đang đợi</a>
-        <a href="${pageContext.request.contextPath}/admin/orders?status=confirmed" class="filter-tab ${currentStatus == 'confirmed' ? 'active' : ''}">Đã xác nhận</a>
-        <a href="${pageContext.request.contextPath}/admin/orders?status=cancelled" class="filter-tab ${currentStatus == 'cancelled' ? 'active' : ''}">Đã hủy</a>
-    </div>
+                    .filter-section {
+                        background: #fff;
+                        padding: 15px;
+                        border-radius: 10px;
+                        margin-bottom: 20px;
+                        display: flex;
+                        gap: 10px;
+                    }
+                </style>
 
-    <div class="orders-card">
-        <table>
-            <thead>
-                <tr>
-                    <th>Mã ĐH</th>
-                    <th>Khách hàng</th>
-                    <th>Ngày đặt</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:forEach var="order" items="${orders}">
-                    <tr>
-                        <td style="font-weight:600">#${order.orderId}</td>
-                        <td>
-                            <div style="font-weight:600; color:#111827">${order.user.fullName}</div>
-                            <div style="font-size:12px; color:#6b7280">${order.receiverPhone}</div>
-                        </td>
-                        <td>${order.orderDate}</td>
-                        <td style="font-weight:700; color:#dc2626"><fmt:formatNumber value="${order.totalAmount}" type="number" groupingUsed="true"/>₫</td>
-                        <td>
-                            <span class="status-badge ${order.status}">
-                                <c:choose>
-                                    <c:when test="${order.status == 'pending'}">Đang đợi</c:when>
-                                    <c:when test="${order.status == 'confirmed'}">Đã xác nhận</c:when>
-                                    <c:when test="${order.status == 'cancelled'}">Đã hủy</c:when>
-                                </c:choose>
-                            </span>
-                        </td>
-                        <td>
-                            <a href="${pageContext.request.contextPath}/admin/orders/${order.orderId}" class="action-btn">Chi tiết</a>
-                        </td>
-                    </tr>
-                </c:forEach>
-                <c:if test="${empty orders}">
-                    <tr>
-                        <td colspan="6" style="text-align:center; padding: 32px; color: #9ca3af">Không có đơn hàng nào</td>
-                    </tr>
-                </c:if>
-            </tbody>
-        </table>
-    </div>
-</div>
+                <div class="container-fluid list-wrapper">
+                    <div class="page-title">
+                        <i class="bi bi-receipt me-2"></i>Quản lý Đơn hàng
+                    </div>
 
-<%@ include file="/WEB-INF/views/admin/layout/footer.jsp" %>
+                    <div class="filter-section">
+                        <form action="${pageContext.request.contextPath}/admin/orders" method="get"
+                            class="d-flex align-items-center gap-2">
+                            <label class="fw-bold">Lọc trạng thái:</label>
+                            <select name="status" class="form-select w-auto" onchange="this.form.submit()">
+                                <option value="all" ${currentStatus=='all' ? 'selected' : '' }>Tất cả</option>
+                                <option value="pending" ${currentStatus=='pending' ? 'selected' : '' }>Chờ xác nhận
+                                </option>
+                                <option value="confirmed" ${currentStatus=='confirmed' ? 'selected' : '' }>Đã xác nhận
+                                </option>
+                                <option value="cancelled" ${currentStatus=='cancelled' ? 'selected' : '' }>Đã hủy
+                                </option>
+                            </select>
+                        </form>
+                    </div>
+
+                    <c:choose>
+                        <c:when test="${empty orders}">
+                            <div class="empty-order">
+                                <i class="bi bi-bag-x"></i>
+                                <p>Không có đơn hàng nào!</p>
+                            </div>
+                        </c:when>
+
+                        <c:otherwise>
+                            <c:forEach var="order" items="${orders}">
+                                <div class="order-card">
+                                    <div>
+                                        <div class="order-id">
+                                            <i class="bi bi-hash"></i>Đơn hàng #${order.orderId}
+                                            <!-- Fix cache -->
+                                            <span class="text-muted ms-2" style="font-size:0.85rem">Khách:
+                                                ${order.user.userName}</span>
+                                        </div>
+                                        <div class="order-date">
+                                            <i class="bi bi-calendar3 me-1"></i>${order.orderDate}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <c:choose>
+                                            <c:when test="${order.status == 'pending'}">
+                                                <span class="badge-status badge-pending">
+                                                    <i class="bi bi-clock me-1"></i>Chờ xác nhận
+                                                </span>
+                                            </c:when>
+                                            <c:when test="${order.status == 'confirmed'}">
+                                                <span class="badge-status badge-confirmed">
+                                                    <i class="bi bi-check-circle me-1"></i>Đã xác nhận
+                                                </span>
+                                            </c:when>
+                                            <c:when test="${order.status == 'cancelled'}">
+                                                <span class="badge-status badge-cancelled">
+                                                    <i class="bi bi-x-circle me-1"></i>Đã hủy
+                                                </span>
+                                            </c:when>
+                                        </c:choose>
+                                    </div>
+
+                                    <div class="order-amount">
+                                        <fmt:formatNumber value="${order.totalAmount}" type="number"
+                                            groupingUsed="true" />đ
+                                    </div>
+
+                                    <a href="${pageContext.request.contextPath}/admin/orders/${order.orderId}"
+                                        class="btn-detail">
+                                        <i class="bi bi-eye me-1"></i>Xem chi tiết
+                                    </a>
+                                </div>
+                            </c:forEach>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+
+                <%@ include file="/WEB-INF/views/admin/layout/footer.jsp" %>

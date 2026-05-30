@@ -24,21 +24,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 		Users loggedInUser = (Users) session.getAttribute("loggedInUser");
 		String uri = request.getRequestURI();
 
-		if (loggedInUser != null) {
-			try {
-				List<Cart> cartItems = cartService.getCartByUser(loggedInUser.getUserId());
-				int cartSize = 0;
-				if (cartItems != null) {
-					for (Cart item : cartItems) {
-						cartSize += item.getQuantity();
-					}
-				}
-				request.setAttribute("cartSize", cartSize);
-			} catch (Exception e) {
-				request.setAttribute("cartSize", 0);
-			}
-		}
-
 		// trang admin -> role phai la admin
 		if (uri.startsWith(request.getContextPath() + "/admin")) {
 			if (loggedInUser == null) {
@@ -51,8 +36,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 			}
 		}
 
-		// trang can dang nhap phai co session
-		if (uri.contains("/cart") || uri.contains("/order")
+		// trang can dang nhap phai co session (ngoại trừ các endpoint AJAX giỏ hàng)
+		if ((uri.contains("/cart") && !uri.contains("/cart/count-ajax") && !uri.contains("/cart/add-ajax"))
+				|| uri.contains("/order")
 				|| uri.contains("/profile") || uri.contains("/checkout")
 				|| uri.contains("/notifications")) {
 			if (loggedInUser == null) {
