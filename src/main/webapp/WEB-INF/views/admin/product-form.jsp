@@ -77,7 +77,8 @@
         <!-- MÔ TẢ -->
         <div style="margin-bottom: 16px;">
             <label style="display: block; margin-bottom: 8px; font-weight: 600;">Mô tả sản phẩm</label>
-            <textarea name="description" style="width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; min-height: 120px;">${product.description}</textarea>
+            <textarea name="description" id="description"
+                      style="width: 100%; padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; min-height: 120px;">${product.description}</textarea>
         </div>
 
         <!-- BUTTONS -->
@@ -93,3 +94,21 @@
     </form>  
 </div>
 <%@ include file="/WEB-INF/views/admin/layout/footer.jsp" %>
+
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+<style>
+    .ck-editor__editable { min-height: 300px !important; }
+</style>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#description'), {
+            toolbar: [
+                'heading', '|',
+                'bold', 'italic', 'underline', '|',
+                'bulletedList', 'numberedList', '|',
+                'link', 'blockQuote', '|',
+                'undo', 'redo'
+            ]
+        })
+        .catch(err => console.error(err));
+</script>

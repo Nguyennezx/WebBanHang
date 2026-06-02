@@ -524,8 +524,14 @@
                             <div class="description-box">
                                 <div class="description-title">Mô tả sản phẩm</div>
                                 <div class="description-text">
-                                    ${product.description != null ? product.description : 'Sản phẩm chính hãng, bảo hành
-                                    12 tháng. Đảm bảo chất lượng tốt nhất.'}
+                                    <c:choose>
+                                        <c:when test="${not empty product.description}">
+                                            <c:out value="${product.description}" escapeXml="false"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            Sản phẩm chính hãng, bảo hành 12 tháng. Đảm bảo chất lượng tốt nhất.
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
                             </div>
 
