@@ -77,4 +77,13 @@ public class UserRepository {
 	                .uniqueResult();
 	        return count != null && count > 0;
 	   }
+
+	   // Kiem tra trung SĐT tren toan he thong
+	   public boolean existsByPhone(String phone) {
+		   Long count = sessionFactory.getCurrentSession()
+	                .createQuery("SELECT COUNT(u) FROM Users u WHERE u.phone = :phone", Long.class)
+	                .setParameter("phone", phone)
+	                .uniqueResult();
+	        return count != null && count > 0;
+	   }
 }

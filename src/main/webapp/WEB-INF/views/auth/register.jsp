@@ -156,9 +156,9 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Số điện thoại</label>
+                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                     <input type="text" name="phone" class="form-control"
-                           placeholder="Nhập số điện thoại" value="${param.phone}">
+                           placeholder="Nhập số điện thoại" value="${param.phone}" required>
                 </div>
 
                 <div class="mb-3">

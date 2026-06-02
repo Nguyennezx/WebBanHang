@@ -38,6 +38,7 @@ public class Users {
 	@Column(name = "full_name", nullable = false, length = 100)
     private String fullName;
 	
+	@NotBlank(message = "Số điện thoại không được để trống")
 	@Pattern(
 		    regexp = "^\\d{10}$",
 		    message = "Số điện thoại phải đúng 10 chữ số"

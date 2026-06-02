@@ -23,6 +23,9 @@ public class UserService {
 		if (userRepository.existsByUsername(user.getUserName())) {
 			return "DUPLICATE_USERNAME";
 		}
+		if (user.getPhone() != null && userRepository.existsByPhone(user.getPhone().trim())) {
+			return "DUPLICATE_PHONE";
+		}
 		return "OK";
 	}
 
@@ -33,6 +36,9 @@ public class UserService {
 		}
 		if (userRepository.existsByUsername(user.getUserName())) {
 			 return false; // username da ton tai
+		}
+		if (user.getPhone() != null && userRepository.existsByPhone(user.getPhone().trim())) {
+			return false; // sđt da ton tai
 		}
 		
 		//ma hoa Brypt trc khi luu

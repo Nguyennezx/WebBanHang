@@ -62,7 +62,10 @@ public class AuthController {
     // ===================== DANG KY =====================
 
     @GetMapping("/register")
-    public String showRegister() {
+    public String showRegister(@RequestParam(value = "error", required = false) String error, ModelMap model) {
+        if ("duplicate".equals(error)) {
+            model.addAttribute("error", "Đăng ký thất bại. Tài khoản hoặc số điện thoại đã tồn tại.");
+        }
         return "auth/register";
     }
 
@@ -85,7 +88,7 @@ public class AuthController {
             return "auth/register";
         }
 
-        // Kiem tra trung username/email
+        // Kiem tra trung username/email/sđt
         String checkStatus = userService.registerStep1(user);
         if ("DUPLICATE_EMAIL".equals(checkStatus)) {
             model.addAttribute("error", "Email này đã được sử dụng");
@@ -93,6 +96,10 @@ public class AuthController {
         }
         if ("DUPLICATE_USERNAME".equals(checkStatus)) {
             model.addAttribute("error", "Tên đăng nhập đã tồn tại");
+            return "auth/register";
+        }
+        if ("DUPLICATE_PHONE".equals(checkStatus)) {
+            model.addAttribute("error", "Số điện thoại đã được sử dụng");
             return "auth/register";
         }
 
