@@ -30,15 +30,6 @@
                         </div>
                     </c:if>
 
-                    <!-- VALIDATION ERRORS -->
-                    <c:if test="${not empty validationErrors}">
-                        <div class="alert alert-danger py-2">
-                            <c:forEach items="${validationErrors}" var="err">
-                                <div>${err.defaultMessage}</div>
-                            </c:forEach>
-                        </div>
-                    </c:if>
-
                     <!-- FORM -->
                     <form action="${pageContext.request.contextPath}/profile/update"
                           method="post">
@@ -65,24 +56,26 @@
                                    value="${user.fullName}" required>
                         </div>
 
-                        <!-- EMAIL -->
+                        <!-- EMAIL (chi xem, khong duoc sua) -->
                         <div class="mb-3">
                             <label class="form-label fw-semibold" style="font-size:0.85rem;">
                                 Email
+                                <span class="text-muted fw-normal" style="font-size:0.78rem;">(không thể thay đổi)</span>
                             </label>
-                            <input type="email" name="email"
-                                   class="form-control"
-                                   value="${user.email}" required>
+                            <input type="email" class="form-control bg-light text-muted"
+                                   value="${user.email}" disabled>
                         </div>
 
-                        <!-- PHONE -->
+                        <!-- PHONE (bat buoc) -->
                         <div class="mb-4">
                             <label class="form-label fw-semibold" style="font-size:0.85rem;">
-                                Số điện thoại
+                                Số điện thoại <span class="text-danger">*</span>
                             </label>
                             <input type="text" name="phone"
                                    class="form-control"
-                                   value="${user.phone}">
+                                   value="${user.phone}"
+                                   placeholder="Nhập số điện thoại 10 chữ số"
+                                   maxlength="10" required>
                         </div>
 
                         <div class="d-flex gap-2">

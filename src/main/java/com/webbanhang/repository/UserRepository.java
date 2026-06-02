@@ -67,4 +67,14 @@ public class UserRepository {
 	                .uniqueResult();
 	        return count != null && count > 0;
 	   }
+
+	   // Kiem tra trung SĐT nhung bo qua chinh user dang cap nhat
+	   public boolean existsByPhoneAndNotUserId(String phone, Integer excludeUserId) {
+		   Long count = sessionFactory.getCurrentSession()
+	                .createQuery("SELECT COUNT(u) FROM Users u WHERE u.phone = :phone AND u.userId != :excludeId", Long.class)
+	                .setParameter("phone", phone)
+	                .setParameter("excludeId", excludeUserId)
+	                .uniqueResult();
+	        return count != null && count > 0;
+	   }
 }

@@ -30,28 +30,50 @@ public class UserController {
     
     //CAP NHAT THONG TIN
     @PostMapping("/update")
-    public String updateProfile(@Valid @ModelAttribute("loggedInUser") Users userForm,
-                                BindingResult result,
+    public String updateProfile(@RequestParam("fullName") String fullName,
+                                @RequestParam("phone") String phone,
                                 HttpSession session,
                                 ModelMap model) {
-    	 Users loggedInUser = (Users) session.getAttribute("loggedInUser");
+        Users loggedInUser = (Users) session.getAttribute("loggedInUser");
 
-    	
-    	 if (result.hasErrors()) {
-    	   	  model.addAttribute("user", loggedInUser);
-              model.addAttribute("validationErrors", result.getAllErrors());
-    	        return "user/profile";
-    	    }
+        // Validate ho ten
+        if (fullName == null || fullName.trim().isEmpty()) {
+            model.addAttribute("user", loggedInUser);
+            model.addAttribute("error", "Họ và tên không được để trống");
+            return "user/profile";
+        }
+        if (!fullName.trim().matches("^[\\p{L} ]+$")) {
+            model.addAttribute("user", loggedInUser);
+            model.addAttribute("error", "Họ tên chỉ được chứa chữ cái");
+            return "user/profile";
+        }
 
-    	
-    	loggedInUser.setFullName(userForm.getFullName().trim());
-    	loggedInUser.setPhone(userForm.getPhone().trim());
-    	loggedInUser.setEmail(userForm.getEmail().trim());
-    	userService.updateProfile(loggedInUser);
-    	
-    	// Cập nhật lại session
+        // Validate SĐT
+        String phoneStatus = userService.validateUpdateProfile(loggedInUser.getUserId(), phone);
+        if ("PHONE_REQUIRED".equals(phoneStatus)) {
+            model.addAttribute("user", loggedInUser);
+            model.addAttribute("error", "Số điện thoại không được để trống");
+            return "user/profile";
+        }
+        if ("PHONE_INVALID".equals(phoneStatus)) {
+            model.addAttribute("user", loggedInUser);
+            model.addAttribute("error", "Số điện thoại phải đúng 10 chữ số");
+            return "user/profile";
+        }
+        if ("PHONE_DUPLICATE".equals(phoneStatus)) {
+            model.addAttribute("user", loggedInUser);
+            model.addAttribute("error", "Số điện thoại này đã được sử dụng bởi tài khoản khác");
+            return "user/profile";
+        }
+
+        // Cap nhat ho ten va SĐT 
+        loggedInUser.setFullName(fullName.trim());
+        loggedInUser.setPhone(phone.trim());
+        userService.updateProfile(loggedInUser);
+
+        // Cap nhat lai session
         session.setAttribute("loggedInUser", loggedInUser);
- 
+
         model.addAttribute("user", loggedInUser);
         model.addAttribute("success", "Cập nhật thông tin thành công");
         return "user/profile";

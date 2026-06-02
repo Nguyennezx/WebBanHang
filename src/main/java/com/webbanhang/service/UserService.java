@@ -15,7 +15,18 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 	
-	//Dang ky
+	// Buoc 1: kiem tra hop le truoc khi gui OTP (chua luu DB)
+	public String registerStep1(Users user) {
+		if (userRepository.existsByEmail(user.getEmail())) {
+			return "DUPLICATE_EMAIL";
+		}
+		if (userRepository.existsByUsername(user.getUserName())) {
+			return "DUPLICATE_USERNAME";
+		}
+		return "OK";
+	}
+
+	//Dang ky (buoc 2: goi sau khi OTP xac nhan dung)
 	public boolean register(Users user) {
 		if(userRepository.existsByEmail(user.getEmail())) {
 			return false; // email da ton tai
@@ -67,17 +78,34 @@ public class UserService {
         return userRepository.findAll();
     }
 	
+	 // Validate truoc khi update profile
+	 public String validateUpdateProfile(Integer userId, String phone) {
+		 // SĐT bat buoc nhap
+		 if (phone == null || phone.trim().isEmpty()) {
+			 return "PHONE_REQUIRED";
+		 }
+		 // Kiem tra dinh dang 10 so
+		 if (!phone.trim().matches("^\\d{10}$")) {
+			 return "PHONE_INVALID";
+		 }
+		 // Kiem tra trung SĐT voi tai khoan khac
+		 if (userRepository.existsByPhoneAndNotUserId(phone.trim(), userId)) {
+			 return "PHONE_DUPLICATE";
+		 }
+		 return "OK";
+	 }
+
 	 public void updateProfile(Users user) {
 	        Users existing = userRepository.findById(user.getUserId());
 	        if (existing == null) return;
-	 
+
+	        // Chi cho sua ho ten va so dien thoai
+	        // Email va username KHONG duoc phep sua
 	        existing.setFullName(user.getFullName());
 	        existing.setPhone(user.getPhone());
-	        existing.setEmail(user.getEmail());
-	 
+
 	        userRepository.update(existing);
-	    
-	 }
+	    }
 	 
 	 
 	 //Doi mat khau
