@@ -32,17 +32,21 @@ public class AuthController {
                               @RequestParam("password") String password,
                               ModelMap model,
                               HttpSession session) {
-        Users user = userService.login(username, password);
 
-        if (user == null) {
+        String status = userService.loginStatus(username, password);
+
+        if ("LOCKED".equals(status)) {
+            model.addAttribute("error", "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin.");
+            return "auth/login";
+        }
+        if (!"OK".equals(status)) {
             model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không đúng");
             return "auth/login";
         }
 
-        // Lưu user vào session để Interceptor và các trang khác dùng
+        Users user = userService.login(username, password);
         session.setAttribute("loggedInUser", user);
 
-        // Phân quyền redirect
         if ("admin".equals(user.getRole())) {
             return "redirect:/admin/dashboard";
         }

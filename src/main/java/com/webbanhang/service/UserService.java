@@ -34,24 +34,27 @@ public class UserService {
 	}
 	
 	
-	//Dang nhap
-	public Users login(String username , String password) {
+	//Dang nhap - tra ve: null neu khong tim thay, "LOCKED" neu bi khoa, user neu thanh cong
+	public String loginStatus(String username, String password) {
 		Users user = userRepository.findByUsername(username);
-		
-		// khong tim thay user hoac tai khoan bi khoa
-		if(user == null ) {
-			 return null;
+		if (user == null) {
+			return "NOT_FOUND";
 		}
 		if (!user.getIsActive()) {
-			return null;
+			return "LOCKED";
 		}
-		
-		// kiem tra password voi BCrypt
-		if(!BCrypt.checkpw(password, user.getPassword())) {
-			return null;
+		if (!BCrypt.checkpw(password, user.getPassword())) {
+			return "WRONG_PASSWORD";
 		}
-		return user;
-		
+		return "OK";
+	}
+
+	public Users login(String username, String password) {
+		String status = loginStatus(username, password);
+		if ("OK".equals(status)) {
+			return userRepository.findByUsername(username);
+		}
+		return null;
 	}
 	
 	
@@ -98,7 +101,9 @@ public class UserService {
 	 public void toggleActive(Integer userId) {
 	        Users user = userRepository.findById(userId);
 	        if (user == null) return;
-	 
+	        if ("admin".equals(user.getRole())) {
+	        	return;
+	        }
 	        user.setIsActive(!user.getIsActive());
 	        userRepository.update(user);
 	    }

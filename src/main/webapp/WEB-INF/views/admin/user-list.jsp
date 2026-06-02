@@ -320,6 +320,7 @@
                             <div class="action-group">
                                 <a href="${pageContext.request.contextPath}/admin/users/${u.userId}"
                                    class="action-btn" title="Xem chi tiết">👁️</a>
+                                <c:if test="${u.role != 'admin'}">
                                 <form action="${pageContext.request.contextPath}/admin/users/${u.userId}/toggle-active"
                                       method="post" style="margin:0">
                                     <button type="submit"
@@ -328,6 +329,7 @@
                                         ${u.isActive ? '🔒' : '🔓'}
                                     </button>
                                 </form>
+                                </c:if>
                             </div>
                         </td>
                     </tr>

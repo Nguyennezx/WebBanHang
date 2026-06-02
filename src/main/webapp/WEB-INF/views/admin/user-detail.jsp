@@ -349,7 +349,8 @@
         </div>
     </div>
 
-    <!-- Toggle active -->
+    <!-- Toggle active - chi hien thi neu khong phai admin -->
+    <c:if test="${user.role != 'admin'}">
     <div class="detail-card">
         <div class="toggle-body">
             <form action="${pageContext.request.contextPath}/admin/users/${user.userId}/toggle-active"
@@ -361,6 +362,7 @@
             </form>
         </div>
     </div>
+    </c:if>
 
 </div>
 
