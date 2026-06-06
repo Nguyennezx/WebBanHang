@@ -1,17 +1,18 @@
 package com.webbanhang.service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.webbanhang.model.Brand;
 import com.webbanhang.model.Category;
 import com.webbanhang.model.Product;
 import com.webbanhang.repository.CategoryandBrandRepository;
 import com.webbanhang.repository.ProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Transactional
@@ -24,13 +25,20 @@ public class ProductService {
     private CategoryandBrandRepository categoryandBrandRepository;
 
     // ===== HIỂN THỊ DANH SÁCH =====
-    
+
     /**
      * Lấy tất cả sản phẩm còn hoạt động
      * Dùng khi load trang danh sách lần đầu
      */
     public List<Product> getAllProducts() {
         return productRepository.findActive();
+    }
+
+    /**
+     * Đếm tổng số sản phẩm đang hoạt động
+     */
+    public long countActiveProducts() {
+        return productRepository.countActive();
     }
 
     /**
@@ -46,7 +54,7 @@ public class ProductService {
     }
 
     // ===== TÌM KIẾM =====
-    
+
     /**
      * Tìm kiếm sản phẩm theo tên
      * Ví dụ: searchByName("iPhone") → tìm tất cả có chứa "iPhone"
@@ -59,7 +67,7 @@ public class ProductService {
     }
 
     // ===== LỌC SẢN PHẨM =====
-    
+
     /**
      * Lọc theo Category
      * Ví dụ: getProductsByCategory(1) → lấy tất cả sản phẩm thuộc category 1
@@ -87,9 +95,13 @@ public class ProductService {
      * Ví dụ: getProductsByPriceRange(5000000, 30000000) → sản phẩm 5-30 triệu
      */
     public List<Product> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
-        if (minPrice == null) minPrice = new BigDecimal(0);
-        if (maxPrice == null) maxPrice = new BigDecimal(999999999);
-        
+        if (minPrice == null) {
+			minPrice = new BigDecimal(0);
+		}
+        if (maxPrice == null) {
+			maxPrice = new BigDecimal(999999999);
+		}
+
         if (minPrice.compareTo(maxPrice) > 0) {
             return getAllProducts(); // Nếu min > max → trả về toàn bộ
         }
@@ -98,13 +110,17 @@ public class ProductService {
 
     /**
      * Lọc theo Category + Giá
-     * Ví dụ: filterByCategoryAndPrice(1, 5000000, 30000000) 
+     * Ví dụ: filterByCategoryAndPrice(1, 5000000, 30000000)
      *        → điện thoại (category 1) giá 5-30 triệu
      */
     public List<Product> filterByCategoryAndPrice(Integer categoryId, BigDecimal minPrice, BigDecimal maxPrice) {
-        if (minPrice == null) minPrice = new BigDecimal(0);
-        if (maxPrice == null) maxPrice = new BigDecimal(999999999);
-        
+        if (minPrice == null) {
+			minPrice = new BigDecimal(0);
+		}
+        if (maxPrice == null) {
+			maxPrice = new BigDecimal(999999999);
+		}
+
         if (categoryId == null || categoryId <= 0) {
             return getProductsByPriceRange(minPrice, maxPrice);
         }
@@ -113,13 +129,17 @@ public class ProductService {
 
     /**
      * Lọc theo Brand + Giá
-     * Ví dụ: filterByBrandAndPrice(1, 5000000, 30000000) 
+     * Ví dụ: filterByBrandAndPrice(1, 5000000, 30000000)
      *        → sản phẩm Apple giá 5-30 triệu
      */
     public List<Product> filterByBrandAndPrice(Integer brandId, BigDecimal minPrice, BigDecimal maxPrice) {
-        if (minPrice == null) minPrice = new BigDecimal(0);
-        if (maxPrice == null) maxPrice = new BigDecimal(999999999);
-        
+        if (minPrice == null) {
+			minPrice = new BigDecimal(0);
+		}
+        if (maxPrice == null) {
+			maxPrice = new BigDecimal(999999999);
+		}
+
         if (brandId == null || brandId <= 0) {
             return getProductsByPriceRange(minPrice, maxPrice);
         }
@@ -128,7 +148,7 @@ public class ProductService {
 
     /**
      * Lọc theo Category + Brand
-     * Ví dụ: filterByCategoryAndBrand(1, 1) 
+     * Ví dụ: filterByCategoryAndBrand(1, 1)
      *        → điện thoại (category 1) của Apple (brand 1)
      */
     public List<Product> filterByCategoryAndBrand(Integer categoryId, Integer brandId) {
@@ -145,10 +165,10 @@ public class ProductService {
     }
 
     // ===== SẮP XẾP =====
-    
+
     /**
      * Sắp xếp sản phẩm
-     * sortType: 
+     * sortType:
      *   - "price_asc" = giá tăng (thấp → cao)
      *   - "price_desc" = giá giảm (cao → thấp)
      *   - "newest" = mới nhất
@@ -173,33 +193,37 @@ public class ProductService {
 
     /**
      * Lọc + Sắp xếp kết hợp (HỖ TRỢ FILTER KẾT HỢP) ✅ FIX
-     * 
+     *
      * Ví dụ:
-     * 1. filterAndSort(1, null, null, null, null) 
+     * 1. filterAndSort(1, null, null, null, null)
      *    → Điện thoại
-     * 2. filterAndSort(1, 1, null, null, null) 
+     * 2. filterAndSort(1, 1, null, null, null)
      *    → Điện thoại + Apple ✅ (HỖ TRỢ KẾT HỢP)
-     * 3. filterAndSort(1, 1, 5000000, 20000000, null) 
+     * 3. filterAndSort(1, 1, 5000000, 20000000, null)
      *    → Điện thoại + Apple + giá 5-20tr ✅ (HỖ TRỢ KẾT HỢP)
-     * 4. filterAndSort(1, 1, 5000000, 20000000, "price_asc") 
+     * 4. filterAndSort(1, 1, 5000000, 20000000, "price_asc")
      *    → Điện thoại + Apple + giá 5-20tr + sắp xếp giá tăng ✅ (HỖ TRỢ KẾT HỢP)
-     * 
+     *
      * Logic: Lọc theo TẤT CẢ các điều kiện không null (kết hợp)
      */
-    public List<Product> filterAndSort(Integer categoryId, Integer brandId, 
+    public List<Product> filterAndSort(Integer categoryId, Integer brandId,
                                       BigDecimal minPrice, BigDecimal maxPrice, String sortType) {
         List<Product> products;
 
         // BƯỚC 1: LỌC DỮ LIỆU KẾT HỢP
-        
+
         // Kiểm tra giá hợp lệ
-        if (minPrice == null) minPrice = new BigDecimal(0);
-        if (maxPrice == null) maxPrice = new BigDecimal(999999999);
+        if (minPrice == null) {
+			minPrice = new BigDecimal(0);
+		}
+        if (maxPrice == null) {
+			maxPrice = new BigDecimal(999999999);
+		}
 
         // Lọc theo CATEGORY + BRAND + GIÁ kết hợp
         boolean hasCategory = categoryId != null && categoryId > 0;
         boolean hasBrand = brandId != null && brandId > 0;
-        boolean hasPrice = minPrice.compareTo(new BigDecimal(0)) > 0 || 
+        boolean hasPrice = minPrice.compareTo(new BigDecimal(0)) > 0 ||
                           maxPrice.compareTo(new BigDecimal(999999999)) < 0;
 
         if (hasCategory && hasBrand && hasPrice) {
@@ -208,31 +232,31 @@ public class ProductService {
             products = productRepository.findByCategoryBrandAndPriceRange(
                 categoryId, brandId, minPrice, maxPrice
             );
-        } 
+        }
         else if (hasCategory && hasBrand) {
             // ✅ Có category + brand (không có giá) → lọc 2 cái
             products = filterByCategoryAndBrand(categoryId, brandId);
-        } 
+        }
         else if (hasCategory && hasPrice) {
             // ✅ Có category + giá (không có brand) → lọc 2 cái
             products = filterByCategoryAndPrice(categoryId, minPrice, maxPrice);
-        } 
+        }
         else if (hasBrand && hasPrice) {
             // ✅ Có brand + giá (không có category) → lọc 2 cái
             products = filterByBrandAndPrice(brandId, minPrice, maxPrice);
-        } 
+        }
         else if (hasCategory) {
             // Chỉ có category
             products = getProductsByCategory(categoryId);
-        } 
+        }
         else if (hasBrand) {
             // Chỉ có brand
             products = getProductsByBrand(brandId);
-        } 
+        }
         else if (hasPrice) {
             // Chỉ có giá
             products = getProductsByPriceRange(minPrice, maxPrice);
-        } 
+        }
         else {
             // Không lọc gì → lấy toàn bộ
             products = getAllProducts();
@@ -257,7 +281,7 @@ public class ProductService {
     }
 
     // ===== HỖ TRỢ ADMIN =====
-    
+
     /**
      * Thêm sản phẩm mới
      * Tự động set: createdDate = now, isActive = true
@@ -292,7 +316,7 @@ public class ProductService {
     }
 
     // ===== DANH MỤC & THƯƠNG HIỆU =====
-    
+
     /**
      * Lấy tất cả danh mục đang active
      */
@@ -321,7 +345,7 @@ public class ProductService {
         return categoryandBrandRepository.findBrandById(id);
     }
 // ===== PHÂN TRANG (PAGINATION) ✅ MỚI =====
-    
+
     /**
      * Lấy danh sách sản phẩm của 1 trang cụ thể
      * @param products     Danh sách sản phẩm đã được lọc
@@ -332,7 +356,7 @@ public class ProductService {
         if (pageNumber == null || pageNumber < 1) {
             pageNumber = 1;
         }
-        
+
         int ITEMS_PER_PAGE = 12; // 12 sản phẩm mỗi trang
         int totalProducts = products.size();
         int startIndex = (pageNumber - 1) * ITEMS_PER_PAGE;
@@ -353,7 +377,9 @@ public class ProductService {
      */
     public int getTotalPages(int totalProducts) {
         int ITEMS_PER_PAGE = 12;
-        if (totalProducts == 0) return 1;
+        if (totalProducts == 0) {
+			return 1;
+		}
         return (int) Math.ceil((double) totalProducts / ITEMS_PER_PAGE);
     }
 }

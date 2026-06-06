@@ -1,17 +1,22 @@
 package com.webbanhang.controller;
 
-import com.webbanhang.model.Order;
-import com.webbanhang.model.OrderItem;
-import com.webbanhang.model.Users;
-import com.webbanhang.service.CartService;
-import com.webbanhang.service.OrderService;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpSession;
-import java.util.List;
+import com.webbanhang.model.Order;
+import com.webbanhang.model.Users;
+import com.webbanhang.service.CartService;
+import com.webbanhang.service.OrderService;
 
 @Controller
 @RequestMapping("/order")
@@ -64,6 +69,7 @@ public class OrderController {
 
         if (shippingAddress == null || shippingAddress.trim().isEmpty()) {
             model.addAttribute("error", "Vui lòng nhập địa chỉ giao hàng!");
+            model.addAttribute("addressError", "Vui lòng nhập địa chỉ giao hàng!");
             model.addAttribute("cartItems",
                     cartService.getCartByUser(user.getUserId()));
 
@@ -81,6 +87,7 @@ public class OrderController {
 
         if (receiverPhone == null || !receiverPhone.trim().matches("\\d{10}")) {
             model.addAttribute("error", "Vui lòng nhập số điện thoại nhận hàng đúng 10 chữ số!");
+            model.addAttribute("phoneError", "Vui lòng nhập số điện thoại nhận hàng đúng 10 chữ số!");
             model.addAttribute("cartItems",
                     cartService.getCartByUser(user.getUserId()));
 
@@ -161,8 +168,9 @@ public class OrderController {
             Model model) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
-        if (user == null)
-            return "redirect:/login";
+        if (user == null) {
+			return "redirect:/login";
+		}
 
         Order order = orderService.getOrderById(orderId);
 

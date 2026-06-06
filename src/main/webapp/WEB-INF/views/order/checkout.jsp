@@ -226,6 +226,11 @@
                        maxlength="10"
                        required
                        placeholder="V&#237; d&#7909;: 0901234567"/>
+                <c:if test="${not empty phoneError}">
+                    <div class="text-danger mt-1 small">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i>${phoneError}
+                    </div>
+                </c:if>
             </div>
             <div class="checkout-field">
                 <label for="shippingAddress">
@@ -239,6 +244,11 @@
                           rows="3"
                           required
                           placeholder="Nh&#7853;p s&#7889; nh&#224;, t&#234;n &#273;&#432;&#7901;ng, ph&#432;&#7901;ng/x&#227;, qu&#7853;n/huy&#7879;n, t&#7881;nh/th&#224;nh ph&#7889;...">${shippingAddress}</textarea>
+                <c:if test="${not empty addressError}">
+                    <div class="text-danger mt-1 small">
+                        <i class="bi bi-exclamation-circle-fill me-1"></i>${addressError}
+                    </div>
+                </c:if>
             </div>
             <div class="field-hint">
                 Vui l&#242;ng nh&#7853;p &#273;&#7883;a ch&#7881; r&#245; r&#224;ng &#273;&#7875; ShopNBH giao h&#224;ng ch&#237;nh x&#225;c.

@@ -1,12 +1,13 @@
 package com.webbanhang.service;
 
+import java.util.Random;
+
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
-import javax.mail.internet.MimeMessage;
-import java.util.Random;
 
 @Service
 public class EmailService {
@@ -32,7 +33,7 @@ public class EmailService {
             			        + "border-radius:10px;"
             			        + "overflow:hidden;"
             			        + "box-shadow:0 2px 8px rgba(0,0,0,0.1)'>"
-            			        
+
             			        // Header
             			        + "<div style='background:#111827;"
             			        + "padding:20px;"
@@ -79,7 +80,7 @@ public class EmailService {
             			        + "</p>"
 
             			        + "</div>"
-            			        
+
             			        // Footer
             			        + "<div style='background:#f9fafb;"
             			        + "padding:15px;"

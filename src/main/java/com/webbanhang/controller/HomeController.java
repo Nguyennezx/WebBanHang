@@ -1,16 +1,17 @@
 package com.webbanhang.controller;
 
-import com.webbanhang.model.Category;
-import com.webbanhang.model.Product;
-import com.webbanhang.service.CategoryBrandService;
-import com.webbanhang.service.ProductService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List;
+import com.webbanhang.model.Category;
+import com.webbanhang.model.Product;
+import com.webbanhang.service.CategoryBrandService;
+import com.webbanhang.service.ProductService;
 
 @Controller
 public class HomeController {

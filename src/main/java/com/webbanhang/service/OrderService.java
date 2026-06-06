@@ -1,17 +1,18 @@
 package com.webbanhang.service;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.webbanhang.model.Cart;
 import com.webbanhang.model.Order;
 import com.webbanhang.model.OrderItem;
 import com.webbanhang.model.Users;
 import com.webbanhang.repository.CartRepository;
 import com.webbanhang.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class OrderService {
@@ -119,6 +120,38 @@ public class OrderService {
     @Transactional
     public List<Order> getAllOrders() {
         List<Order> orders = orderRepository.findAll();
+        if (orders != null) {
+            for (Order order : orders) {
+                if (order.getUser() != null) {
+                    org.hibernate.Hibernate.initialize(order.getUser());
+                }
+            }
+        }
+        return orders;
+    }
+
+    // Đếm tổng số đơn hàng
+    @Transactional
+    public long countAll() {
+        return orderRepository.countAll();
+    }
+
+    // Đếm số đơn hàng theo trạng thái
+    @Transactional
+    public long countByStatus(String status) {
+        return orderRepository.countByStatus(status);
+    }
+
+    // Tính tổng doanh thu (đơn đã confirmed)
+    @Transactional
+    public java.math.BigDecimal getTotalRevenue() {
+        return orderRepository.getTotalRevenue();
+    }
+
+    // Lấy các đơn hàng mới nhất
+    @Transactional
+    public List<Order> getRecentOrders(int limit) {
+        List<Order> orders = orderRepository.findRecentOrders(limit);
         if (orders != null) {
             for (Order order : orders) {
                 if (order.getUser() != null) {

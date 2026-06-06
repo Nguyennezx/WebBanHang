@@ -1,4 +1,5 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ include file="/WEB-INF/views/admin/layout/header.jsp" %>
 
 <div class="page-header">
@@ -10,19 +11,19 @@
     
     <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px;">
         <div style="background: #f0f2f5; padding: 20px; border-radius: 4px; text-align: center;">
-            <div style="font-size: 28px; font-weight: 700; color: #1890ff;">20+</div>
+            <div style="font-size: 28px; font-weight: 700; color: #1890ff;">${totalProducts}</div>
             <div style="color: #666; font-size: 12px; margin-top: 8px;">Sản phẩm</div>
         </div>
         <div style="background: #f0f2f5; padding: 20px; border-radius: 4px; text-align: center;">
-            <div style="font-size: 28px; font-weight: 700; color: #52c41a;">6</div>
+            <div style="font-size: 28px; font-weight: 700; color: #52c41a;">${totalCategories}</div>
             <div style="color: #666; font-size: 12px; margin-top: 8px;">Danh mục</div>
         </div>
         <div style="background: #f0f2f5; padding: 20px; border-radius: 4px; text-align: center;">
-            <div style="font-size: 28px; font-weight: 700; color: #faad14;">8</div>
+            <div style="font-size: 28px; font-weight: 700; color: #faad14;">${totalBrands}</div>
             <div style="color: #666; font-size: 12px; margin-top: 8px;">Thương hiệu</div>
         </div>
         <div style="background: #f0f2f5; padding: 20px; border-radius: 4px; text-align: center;">
-            <div style="font-size: 28px; font-weight: 700; color: #f5222d;">3</div>
+            <div style="font-size: 28px; font-weight: 700; color: #f5222d;">${totalUsers}</div>
             <div style="color: #666; font-size: 12px; margin-top: 8px;">Users</div>
         </div>
     </div>

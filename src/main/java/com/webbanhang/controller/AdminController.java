@@ -1,13 +1,18 @@
 package com.webbanhang.controller;
 
-import com.webbanhang.model.Users;
-import com.webbanhang.service.UserService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import com.webbanhang.model.Users;
+import com.webbanhang.service.UserService;
 
 @Controller
 @RequestMapping("/admin/users")
@@ -29,7 +34,9 @@ public class AdminController {
     @GetMapping("/{id}")
     public String userDetail(@PathVariable("id") Integer id, ModelMap model) {
         Users user = userService.findById(id);
-        if (user == null) return "redirect:/admin/users";
+        if (user == null) {
+			return "redirect:/admin/users";
+		}
         model.addAttribute("user", user);
         return "admin/user-detail";
     }

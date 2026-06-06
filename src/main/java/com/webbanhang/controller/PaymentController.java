@@ -1,24 +1,29 @@
 package com.webbanhang.controller;
 
+import java.math.RoundingMode;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.webbanhang.model.Order;
 import com.webbanhang.model.Payment;
 import com.webbanhang.model.Users;
 import com.webbanhang.service.OrderService;
 import com.webbanhang.service.PaymentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 import vn.payos.model.v2.paymentRequests.PaymentLink;
-import vn.payos.model.v2.paymentRequests.PaymentLinkStatus;
 import vn.payos.model.v2.paymentRequests.Transaction;
 
 @Controller
@@ -33,10 +38,9 @@ public class PaymentController {
 
     // ===== CẤU HÌNH API KEYS CỦA PAYOS =====
     // Bạn hãy đăng ký tài khoản trên my.payos.vn và thay đổi 3 thông số này để chạy
-    // thật.
-    private static final String PAYOS_CLIENT_ID = "1fb7c82f-d90a-46b8-9add-22d9e5e8d5cb";
-    private static final String PAYOS_API_KEY = "ccf49a71-f058-412f-97b7-08aa141e70a9";
-    private static final String PAYOS_CHECKSUM_KEY = "e659a0870afc9d271ba8ca93660caf884e2e670a92447d400bd7515c3f089f16";
+    private static final String PAYOS_CLIENT_ID = "";
+    private static final String PAYOS_API_KEY = "";
+    private static final String PAYOS_CHECKSUM_KEY = "";
 
     private PayOS payOS;
 
@@ -54,8 +58,9 @@ public class PaymentController {
             Model model) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
-        if (user == null)
-            return "redirect:/login";
+        if (user == null) {
+			return "redirect:/login";
+		}
 
         // Kiểm tra order có thuộc về user không
         Order order = orderService.getOrderById(orderId);
@@ -148,8 +153,9 @@ public class PaymentController {
             Model model) {
 
         Users user = (Users) session.getAttribute("loggedInUser");
-        if (user == null)
-            return "redirect:/login";
+        if (user == null) {
+			return "redirect:/login";
+		}
 
         Order order = orderService.getOrderById(orderId);
         if (order == null ||
@@ -173,8 +179,9 @@ public class PaymentController {
     @GetMapping("/success")
     public String paymentSuccess(@RequestParam Integer orderId, HttpSession session, Model model) {
         Users user = (Users) session.getAttribute("loggedInUser");
-        if (user == null)
-            return "redirect:/login";
+        if (user == null) {
+			return "redirect:/login";
+		}
 
         Order order = orderService.getOrderById(orderId);
         if (order == null || !order.getUser().getUserId().equals(user.getUserId())) {
@@ -219,8 +226,9 @@ public class PaymentController {
     @GetMapping("/cancel")
     public String paymentCancel(@RequestParam Integer orderId, HttpSession session, Model model) {
         Users user = (Users) session.getAttribute("loggedInUser");
-        if (user == null)
-            return "redirect:/login";
+        if (user == null) {
+			return "redirect:/login";
+		}
 
         Order order = orderService.getOrderById(orderId);
         if (order == null || !order.getUser().getUserId().equals(user.getUserId())) {

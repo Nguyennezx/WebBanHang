@@ -1,20 +1,21 @@
 package com.webbanhang.service;
-import com.webbanhang.model.Users;
-import com.webbanhang.repository.UserRepository;
+import java.util.List;
+
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.webbanhang.model.Users;
+import com.webbanhang.repository.UserRepository;
 
 @Service
 @Transactional
 public class UserService {
-   
+
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	// Buoc 1: kiem tra hop le truoc khi gui OTP (chua luu DB)
 	public String registerStep1(Users user) {
 		if (userRepository.existsByEmail(user.getEmail())) {
@@ -31,16 +32,10 @@ public class UserService {
 
 	//Dang ky (buoc 2: goi sau khi OTP xac nhan dung)
 	public boolean register(Users user) {
-		if(userRepository.existsByEmail(user.getEmail())) {
-			return false; // email da ton tai
-		}
-		if (userRepository.existsByUsername(user.getUserName())) {
-			 return false; // username da ton tai
-		}
-		if (user.getPhone() != null && userRepository.existsByPhone(user.getPhone().trim())) {
+		if (userRepository.existsByEmail(user.getEmail()) || userRepository.existsByUsername(user.getUserName()) || (user.getPhone() != null && userRepository.existsByPhone(user.getPhone().trim()))) {
 			return false; // sđt da ton tai
 		}
-		
+
 		//ma hoa Brypt trc khi luu
 		String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
 		user.setPassword(hashedPassword);
@@ -49,8 +44,8 @@ public class UserService {
 		userRepository.save(user);
 		return true;
 	}
-	
-	
+
+
 	//Dang nhap - tra ve: null neu khong tim thay, "LOCKED" neu bi khoa, user neu thanh cong
 	public String loginStatus(String username, String password) {
 		Users user = userRepository.findByUsername(username);
@@ -73,17 +68,31 @@ public class UserService {
 		}
 		return null;
 	}
-	
-	
+
+
 	//Thong tin ca nhan
 	public Users findById(Integer id) {
 		return userRepository.findById(id);
 	}
-	
+
 	public List<Users> findAll() {
         return userRepository.findAll();
     }
-	
+
+    /**
+     * Đếm tổng số user
+     */
+    public long countAll() {
+        return userRepository.countAll();
+    }
+
+    /**
+     * Đếm số user đang hoạt động
+     */
+    public long countActive() {
+        return userRepository.countActive();
+    }
+
 	 // Validate truoc khi update profile
 	 public String validateUpdateProfile(Integer userId, String phone) {
 		 // SĐT bat buoc nhap
@@ -103,7 +112,9 @@ public class UserService {
 
 	 public void updateProfile(Users user) {
 	        Users existing = userRepository.findById(user.getUserId());
-	        if (existing == null) return;
+	        if (existing == null) {
+				return;
+			}
 
 	        // Chi cho sua ho ten va so dien thoai
 	        // Email va username KHONG duoc phep sua
@@ -112,51 +123,52 @@ public class UserService {
 
 	        userRepository.update(existing);
 	    }
-	 
-	 
+
+
 	 //Doi mat khau
 	 public boolean changePassword(Integer userId , String oldPassword , String newPassword) {
 		 Users user = userRepository.findById(userId);
-		 if (user == null) {
-			 return false;
-		 }
 		 //Kiem tra mat khau cu
-		 if (!BCrypt.checkpw(oldPassword, user.getPassword())) {
+		 if ((user == null) || !BCrypt.checkpw(oldPassword, user.getPassword())) {
 			 return false;
 		 }
 		 //Hash mat khau moi roi luu
 		 user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
 		 userRepository.update(user);
 		 return true;
-				 
+
 	 }
-	 
+
 	 //Admin : mo khoa tai khoan
 	 public void toggleActive(Integer userId) {
 	        Users user = userRepository.findById(userId);
-	        if (user == null) return;
-	        if ("admin".equals(user.getRole())) {
+	        if ((user == null) || "admin".equals(user.getRole())) {
 	        	return;
 	        }
 	        user.setIsActive(!user.getIsActive());
 	        userRepository.update(user);
 	    }
+	 //reset password
 	 public void adminResetPassword(Integer userId, String newPassword) {
 	        Users user = userRepository.findById(userId);
-	        if (user == null) return;
+	        if (user == null) {
+				return;
+			}
 	        user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
 	        userRepository.update(user);
 	    }
-	 
+
 	 //check email
 	  public Users findByEmail(String email) {
 		  return userRepository.findByEmail(email);
 	  }
-	  
-	  //reset password 
+
+	  //reset password
 	  public void resetPasswordByEmail(String email, String newPassword) {
 		    Users user = userRepository.findByEmail(email);
-		    if (user == null) return;
+		    if (user == null) {
+				return;
+			}
 		    user.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
 		    userRepository.update(user);
 		}

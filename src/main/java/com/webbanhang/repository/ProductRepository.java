@@ -1,29 +1,28 @@
 package com.webbanhang.repository;
 
 
-import com.webbanhang.model.Product;
+import java.math.BigDecimal;
+import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.math.BigDecimal;
-import java.util.List;
-
 import org.springframework.transaction.annotation.Transactional;
+
+import com.webbanhang.model.Product;
 
 @Repository
 public class ProductRepository {
    @Autowired
    private SessionFactory sessionFactory;
-   
-   
+
+
    public List<Product> findAll(){
 	   return sessionFactory
 			  .getCurrentSession()
 			  .createQuery("FROM Product", Product.class)
 			  .list();
-			  
+
    }
    @Transactional
    public void save(Product product) {
@@ -37,27 +36,27 @@ public class ProductRepository {
 	    }
        sessionFactory.getCurrentSession().save(product);  // ← Sửa persist() → save()
    }
-   
+
    public void update(Product product) {
 	   sessionFactory.getCurrentSession().update(product);
    }
-   
+
    public void delete(Product product) {
 	   sessionFactory.getCurrentSession().delete(product);
    }
-   
+
    public Product findById(Integer id) {
        return sessionFactory.getCurrentSession().get(Product.class, id);
    }
-   
+
    public List<Product> findActive(){
 	   return sessionFactory
 			  .getCurrentSession()
 			  .createQuery("FROM Product p WHERE p.isActive = true", Product.class)
 			  .list();
-			  
+
    }
-   
+
    public List<Product> findCategory(Integer categoryId){
 	   return sessionFactory
 				  .getCurrentSession()
@@ -65,7 +64,7 @@ public class ProductRepository {
 				  .setParameter("catId",categoryId)
 				  .list();
    }
-   
+
    public List<Product> findByBrand(Integer brandId){
 	   return sessionFactory
 				  .getCurrentSession()
@@ -73,7 +72,7 @@ public class ProductRepository {
 				  .setParameter("brandId",brandId)
 				  .list();
    }
-   
+
    public List<Product> findLatest(int limit){
 	   return sessionFactory
 				  .getCurrentSession()
@@ -92,7 +91,7 @@ public class ProductRepository {
            .setParameter("keyword", "%" + keyword + "%")
            .list();
    }
-   
+
    /**
     * Lọc sản phẩm theo khoảng giá
     */
@@ -105,7 +104,7 @@ public class ProductRepository {
            .setParameter("maxPrice", maxPrice)
            .list();
    }
-   
+
    /**
     * Lọc sản phẩm theo Category + khoảng giá
     */
@@ -120,7 +119,7 @@ public class ProductRepository {
            .setParameter("maxPrice", maxPrice)
            .list();
    }
-   
+
    /**
     * Lọc sản phẩm theo Brand + khoảng giá
     */
@@ -135,7 +134,7 @@ public class ProductRepository {
            .setParameter("maxPrice", maxPrice)
            .list();
    }
-   
+
    /**
     * Lọc theo Category + Brand
     */
@@ -155,7 +154,7 @@ public class ProductRepository {
     * Ví dụ: Điện thoại (category 1) của Apple (brand 1) giá 5-20 triệu
     */
    public List<Product> findByCategoryBrandAndPriceRange(
-       Integer categoryId, Integer brandId, 
+       Integer categoryId, Integer brandId,
        BigDecimal minPrice, BigDecimal maxPrice) {
        String query = "FROM Product p WHERE p.category.categoryId = :catId " +
                      "AND p.brand.brandId = :brandId " +
@@ -170,7 +169,7 @@ public class ProductRepository {
            .setParameter("maxPrice", maxPrice)
            .list();
    }
-     
+
    /**
     * Sắp xếp theo giá: Tăng dần (Thấp → Cao)
     */
@@ -180,7 +179,7 @@ public class ProductRepository {
            .createQuery("FROM Product p WHERE p.isActive = true ORDER BY p.price ASC", Product.class)
            .list();
    }
-   
+
    /**
     * Sắp xếp theo giá: Giảm dần (Cao → Thấp)
     */
@@ -190,7 +189,7 @@ public class ProductRepository {
            .createQuery("FROM Product p WHERE p.isActive = true ORDER BY p.price DESC", Product.class)
            .list();
    }
-   
+
    /**
     * Sắp xếp theo ngày tạo: Mới nhất
     */
@@ -205,10 +204,30 @@ public class ProductRepository {
     * Lấy top N sản phẩm bán chạy
     */
    public List<Product> findBestSelling(int limit) {
-       return sessionFactory
-           .getCurrentSession()
-           .createQuery("FROM Product p WHERE p.isActive = true ORDER BY p.quantityStock DESC", Product.class)
-           .setMaxResults(limit)
-           .list();
+        return sessionFactory
+            .getCurrentSession()
+            .createQuery("FROM Product p WHERE p.isActive = true ORDER BY p.quantityStock DESC", Product.class)
+            .setMaxResults(limit)
+            .list();
+    }
+
+   /**
+    * Đếm tổng số sản phẩm đang hoạt động
+    */
+   public long countActive() {
+       Long count = sessionFactory.getCurrentSession()
+               .createQuery("SELECT COUNT(p) FROM Product p WHERE p.isActive = true", Long.class)
+               .uniqueResult();
+       return count != null ? count : 0L;
+   }
+
+   /**
+    * Đếm tổng số tất cả sản phẩm (kể cả inactive)
+    */
+   public long countAll() {
+       Long count = sessionFactory.getCurrentSession()
+               .createQuery("SELECT COUNT(p) FROM Product p", Long.class)
+               .uniqueResult();
+       return count != null ? count : 0L;
    }
 }

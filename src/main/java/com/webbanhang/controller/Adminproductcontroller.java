@@ -1,21 +1,26 @@
 package com.webbanhang.controller;
 
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.webbanhang.model.Brand;
 import com.webbanhang.model.Category;
 import com.webbanhang.model.Product;
 import com.webbanhang.service.ProductService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @Controller
 @RequestMapping("/admin/products")
@@ -30,14 +35,14 @@ public class Adminproductcontroller {
 	@GetMapping("")
 	public String listProducts(@RequestParam(value = "keyword", required = false) String keyword, Model model) {
 	    List<Product> products;
-	    
+
 	    // Bắt từ khóa tìm kiếm để lọc sản phẩm
 	    if (keyword != null && !keyword.trim().isEmpty()) {
 	        products = productService.searchByName(keyword);
 	    } else {
 	        products = productService.getAllProducts();
 	    }
-	    
+
 	    List<Category> categories = productService.getAllCategories();
 
 	    model.addAttribute("products", products);
@@ -54,12 +59,12 @@ public class Adminproductcontroller {
 				 * product = new Product(); List<Category> categories =
 				 * productService.getAllCategories(); List<Brand> brands =
 				 * productService.getAllBrands();
-				 * 
+				 *
 				 * model.addAttribute("product", product); model.addAttribute("categories",
 				 * categories); model.addAttribute("brands", brands);
 				 * model.addAttribute("pageTitle", "Thêm sản phẩm");
 				 * model.addAttribute("isCreate", true);
-				 * 
+				 *
 				 * return "admin/product-form"; }
 				 */
 
@@ -94,7 +99,7 @@ public class Adminproductcontroller {
 	    if (!uploadDirFile.exists()) {
 	        uploadDirFile.mkdirs();
 	    }
-	    
+
 	    // 2. Tự động tìm đường dẫn thư mục gốc Workspace (để lưu giữ ảnh vĩnh viễn)
 	    String realPath = request.getServletContext().getRealPath("/");
 	    String projectSourceDir = realPath.replace(
@@ -106,28 +111,28 @@ public class Adminproductcontroller {
 	    if (!backupDirFile.exists()) {
 	        backupDirFile.mkdirs();
 	    }
-	    
+
 	    String imageUrl = "/images/placeholder.jpg";
 	    if (imageFile != null && !imageFile.isEmpty()) {
 	        try {
 	            String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-	            
+
 	            // Bước A: Lưu file vào thư mục tạm trên Server (để hiện ngay trên Web)
 	            String uploadPath = uploadDir + java.io.File.separator + fileName;
 	            java.io.File serverFile = new java.io.File(uploadPath);
 	            imageFile.transferTo(serverFile);
-	            
+
 	            // Bước B: Sao lưu vào thư mục gốc Workspace (giúp giữ ảnh vĩnh viễn)
 	            if (realPath.contains(".metadata")) { // Chỉ thực hiện khi chạy local trên Eclipse
 	                String backupPath = backupDir + fileName;
 	                java.io.File backupFile = new java.io.File(backupPath);
 	                java.nio.file.Files.copy(
-	                    serverFile.toPath(), 
-	                    backupFile.toPath(), 
+	                    serverFile.toPath(),
+	                    backupFile.toPath(),
 	                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
 	                );
 	            }
-	            
+
 	            imageUrl = "/images/" + fileName;
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -140,7 +145,7 @@ public class Adminproductcontroller {
 	    product.setCategory(category);
 	    product.setBrand(brand);
 
-	    
+
 	    try {
 	        productService.addProduct(product);
 	        return "redirect:/admin/products?success=" + URLEncoder.encode("Thêm sản phẩm thành công", StandardCharsets.UTF_8);
@@ -148,9 +153,9 @@ public class Adminproductcontroller {
 	        return "redirect:/admin/products/create?error=" + URLEncoder.encode("Tên sản phẩm này đã tồn tại!", StandardCharsets.UTF_8);
 	    }
 
-	    
 
-	    
+
+
 	}
 
 	/**
@@ -236,7 +241,7 @@ public class Adminproductcontroller {
 	    if (!uploadDirFile.exists()) {
 	        uploadDirFile.mkdirs();
 	    }
-	    
+
 	    // 2. Tự động tìm đường dẫn thư mục gốc Workspace (để lưu giữ ảnh vĩnh viễn)
 	    String realPath = request.getServletContext().getRealPath("/");
 	    String projectSourceDir = realPath.replace(
@@ -248,28 +253,28 @@ public class Adminproductcontroller {
 	    if (!backupDirFile.exists()) {
 	        backupDirFile.mkdirs();
 	    }
-	    
+
 	    String imageUrl = product.getImageUrl(); // Giữ ảnh cũ
 	    if (imageFile != null && !imageFile.isEmpty()) {
 	        try {
 	            String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-	            
+
 	            // Bước A: Lưu file vào thư mục tạm trên Server (để hiện ngay trên Web)
 	            String uploadPath = uploadDir + java.io.File.separator + fileName;
 	            java.io.File serverFile = new java.io.File(uploadPath);
 	            imageFile.transferTo(serverFile);
-	            
+
 	            // Bước B: Sao lưu vào thư mục gốc Workspace (giúp giữ ảnh vĩnh viễn)
 	            if (realPath.contains(".metadata")) { // Chỉ thực hiện khi chạy local trên Eclipse
 	                String backupPath = backupDir + fileName;
 	                java.io.File backupFile = new java.io.File(backupPath);
 	                java.nio.file.Files.copy(
-	                    serverFile.toPath(), 
-	                    backupFile.toPath(), 
+	                    serverFile.toPath(),
+	                    backupFile.toPath(),
 	                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
 	                );
 	            }
-	            
+
 	            imageUrl = "/images/" + fileName;
 	        } catch (Exception e) {
 	            e.printStackTrace();
@@ -290,7 +295,7 @@ public class Adminproductcontroller {
 	    }
 
 
-	    
+
 	}
 
 	/**

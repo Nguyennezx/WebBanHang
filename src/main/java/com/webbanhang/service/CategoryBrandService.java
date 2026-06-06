@@ -1,14 +1,14 @@
 package com.webbanhang.service;
 
-import com.webbanhang.model.Brand;
-import com.webbanhang.model.Category;
-import com.webbanhang.repository.CategoryandBrandRepository;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.webbanhang.model.Brand;
+import com.webbanhang.model.Category;
+import com.webbanhang.repository.CategoryandBrandRepository;
 
 @Service
 @Transactional
@@ -25,6 +25,10 @@ public class CategoryBrandService {
 
     public List<Category> getActiveCategories() {
         return categoryandBrandRepository.findActiveCategories();
+    }
+
+    public long countActiveCategories() {
+        return categoryandBrandRepository.countActiveCategories();
     }
 
     public Category getCategoryById(Integer id) {
@@ -56,6 +60,10 @@ public class CategoryBrandService {
 
     public List<Brand> getActiveBrands() {
         return categoryandBrandRepository.findActiveBrands();
+    }
+
+    public long countActiveBrands() {
+        return categoryandBrandRepository.countActiveBrands();
     }
 
     public Brand getBrandById(Integer id) {

@@ -1,32 +1,44 @@
 package com.webbanhang.model;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 @Entity
 @Table(name = "ORDERS")
 public class Order {
-   
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Integer orderId;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_ORDERS_USERS"))
     private Users user;
-	
+
 	@Column(name = "order_date")
     private LocalDateTime orderDate = LocalDateTime.now();
-	
+
 	@Column(name = "total_amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal totalAmount;
-	
+
 	@Column(name = "status", length = 20)
     private String status = "pending";
-	
+
 	@Column(name = "notes", columnDefinition = "NVARCHAR(MAX)")
     private String notes;
 
@@ -35,16 +47,16 @@ public class Order {
 
 	@Column(name = "receiver_phone", length = 20)
     private String receiverPhone;
-	
+
 	 @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 private List<OrderItem> orderItems;
-	 
+
 	 @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 private List<Payment> payments;
-	 
+
 	 @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 private List<Notification> notifications;
-	 
+
 	 public Order() {}
 
 	 public Integer getOrderId() {
@@ -134,6 +146,6 @@ public class Order {
 	 public void setNotifications(List<Notification> notifications) {
 		 this.notifications = notifications;
 	 }
-	 
-	 
+
+
 }

@@ -1,15 +1,23 @@
 package com.webbanhang.controller;
 
-import com.webbanhang.model.Brand;
-import com.webbanhang.model.Category;
-import com.webbanhang.service.CategoryBrandService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.webbanhang.model.Brand;
+import com.webbanhang.model.Category;
+import com.webbanhang.service.CategoryBrandService;
+import com.webbanhang.service.ProductService;
+import com.webbanhang.service.UserService;
 
 @Controller
 @RequestMapping("/admin")
@@ -18,10 +26,20 @@ public class AdminCategoryBrandController {
     @Autowired
     private CategoryBrandService categoryBrandService;
 
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private UserService userService;
+
     // ===== DASHBOARD =====
 
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
+        model.addAttribute("totalProducts", productService.countActiveProducts());
+        model.addAttribute("totalCategories", categoryBrandService.countActiveCategories());
+        model.addAttribute("totalBrands", categoryBrandService.countActiveBrands());
+        model.addAttribute("totalUsers", userService.countAll());
         model.addAttribute("pageTitle", "Dashboard");
         return "admin/dashboard";
     }

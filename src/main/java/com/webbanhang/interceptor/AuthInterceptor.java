@@ -1,14 +1,14 @@
 package com.webbanhang.interceptor;
 
-import com.webbanhang.model.Users;
-import com.webbanhang.model.Cart;
-import com.webbanhang.service.CartService;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
-import java.util.List;
+
+import com.webbanhang.model.Users;
+import com.webbanhang.service.CartService;
 
 public class AuthInterceptor implements HandlerInterceptor {
 
