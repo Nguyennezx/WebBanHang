@@ -33,8 +33,8 @@ public class ProductRepository {
 	    } catch (Exception e) {
 	        System.out.println("ERROR SAVING: " + e.getMessage());
 	        e.printStackTrace();
+	        throw e; // Rethrow to trigger rollback
 	    }
-       sessionFactory.getCurrentSession().save(product);  // ← Sửa persist() → save()
    }
 
    public void update(Product product) {
