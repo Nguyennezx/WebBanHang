@@ -1,31 +1,41 @@
 package com.webbanhang.model;
-import javax.persistence.*;
 import java.math.BigDecimal;
- 
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 @Entity
 @Table(name = "ORDER_ITEMS")
 public class OrderItem {
-	
+
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
      @Column(name = "order_item_id")
 	 private Integer orderItemId;
-	
+
 	 @ManyToOne(fetch = FetchType.LAZY)
 	 @JoinColumn(name = "order_id", nullable = false, foreignKey = @ForeignKey(name = "FK_ORDER_ITEMS_ORDERS"))
      private Order order;
-	 
+
 	 @ManyToOne(fetch = FetchType.LAZY)
 	 @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "FK_ORDER_ITEMS_PRODUCTS"))
      private Product product;
-	 
+
 	 @Column(name = "quantity", nullable = false)
 	 private Integer quantity;
-     
+
 	// Lưu giá tại thời điểm đặt hàng - quan trọng vì giá sản phẩm có thể thay đổi
 	 @Column(name = "price", nullable = false, precision = 10, scale = 2)
      private BigDecimal price;
-	 
+
 	 public OrderItem() {}
 
 	 public Integer getOrderItemId() {
@@ -67,6 +77,6 @@ public class OrderItem {
 	 public void setPrice(BigDecimal price) {
 		 this.price = price;
 	 }
-	 
-	 
+
+
 }

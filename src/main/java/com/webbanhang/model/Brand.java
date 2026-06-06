@@ -1,7 +1,16 @@
 package com.webbanhang.model;
 
-import javax.persistence.*;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "BRANDS")
@@ -10,19 +19,19 @@ public class Brand {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "brand_id")
     private Integer brandId;
-	
-	@Column(name = "brand_name", nullable = false, unique = true, length = 100)
+
+	@Column(name = "brand_name", nullable = false,length = 100)
     private String brandName;
- 
+
     @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
     private String description;
- 
+
     @Column(name = "is_active")
     private Boolean isActive = true;
- 
+
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Product> products;
-    
+
     public Brand() {}
 
 	public Integer getBrandId() {
@@ -64,6 +73,6 @@ public class Brand {
 	public void setProducts(List<Product> products) {
 		this.products = products;
 	}
-    
-    
+
+
 }

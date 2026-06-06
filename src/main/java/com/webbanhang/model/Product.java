@@ -1,9 +1,21 @@
 package com.webbanhang.model;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "PRODUCTS")
@@ -12,45 +24,45 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Integer productId;
-	
-	@Column(name = "product_name", nullable = false, length = 150)
+
+	@Column(name = "product_name",  nullable = false, length = 150)
     private String productName;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
+
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id", foreignKey = @ForeignKey(name = "FK_PRODUCTS_CATEGORIES"))
     private Category category;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
+
+	@ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "brand_id", foreignKey = @ForeignKey(name = "FK_PRODUCTS_BRANDS"))
     private Brand brand;
-	
+
 	@Column(name = "price", nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
-	
+
 	 @Column(name = "description", columnDefinition = "NVARCHAR(MAX)")
 	 private String description;
-	 
+
 	 @Column(name = "quantity_stock")
 	 private Integer quantityStock = 0;
-	 
+
 	 @Column(name = "image_url", length = 255)
 	 private String imageUrl;
-	 
+
 	 @Column(name = "created_date")
 	 private LocalDateTime createdDate = LocalDateTime.now();
-	 
+
 	 @Column(name = "updated_date")
 	 private LocalDateTime updatedDate;
-	 
+
 	 @Column(name = "is_active")
 	 private Boolean isActive = true;
-	 
+
 	 @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 private List<Cart> carts;
-	 
+
 	 @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 private List<OrderItem> orderItems;
-	 
+
 	 public Product() {}
 
 	 public Integer getProductId() {
@@ -156,6 +168,6 @@ public class Product {
 	 public void setOrderItems(List<OrderItem> orderItems) {
 		 this.orderItems = orderItems;
 	 }
-	 
-	 
+
+
 }

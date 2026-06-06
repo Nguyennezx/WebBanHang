@@ -1,41 +1,51 @@
 package com.webbanhang.model;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
- 
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 @Entity
 @Table(name = "NOTIFICATIONS")
 public class Notification{
-   
+
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id")
     private Integer notificationId;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "FK_NOTIFICATIONS_USERS"))
     private Users user;
-	
+
 	// Nullable - thông báo có thể không liên quan đến đơn hàng nào
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", foreignKey = @ForeignKey(name = "FK_NOTIFICATIONS_ORDERS"))
     private Order order;
-    
+
     @Column(name = "notification_type", nullable = false, length = 50)
     private String notificationType;
- 
+
     @Column(name = "title", nullable = false, length = 150)
     private String title;
- 
+
     @Column(name = "message", nullable = false, columnDefinition = "NVARCHAR(MAX)")
     private String message;
- 
+
     @Column(name = "is_read")
     private Boolean isRead = false;
- 
+
     @Column(name = "created_date")
     private LocalDateTime createdDate = LocalDateTime.now();
-    
+
     public Notification() {}
 
 	public Integer getNotificationId() {
@@ -101,7 +111,7 @@ public class Notification{
 	public void setCreatedDate(LocalDateTime createdDate) {
 		this.createdDate = createdDate;
 	}
-    
-    
- 
+
+
+
 }

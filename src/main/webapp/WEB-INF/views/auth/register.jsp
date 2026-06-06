@@ -126,6 +126,14 @@
             <c:if test="${not empty error}">
                 <div class="alert alert-danger"><i class="bi bi-exclamation-circle me-1"></i> ${error}</div>
             </c:if>
+            <c:if test="${not empty validationErrors}">
+                  <div class="alert alert-danger">
+                   <c:forEach items="${validationErrors}" var="err">
+                  <div>${err.defaultMessage}</div>
+             </c:forEach>
+
+    </div>
+</c:if>
 
             <form action="${pageContext.request.contextPath}/register" method="post">
 
@@ -137,7 +145,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" name="username" class="form-control"
+                    <input type="text" name="userName" class="form-control"
                            placeholder="Nhập tên đăng nhập" value="${param.userName}" required>
                 </div>
 
@@ -148,9 +156,9 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Số điện thoại</label>
+                    <label class="form-label">Số điện thoại <span class="text-danger">*</span></label>
                     <input type="text" name="phone" class="form-control"
-                           placeholder="Nhập số điện thoại" value="${param.phone}">
+                           placeholder="Nhập số điện thoại" value="${param.phone}" required>
                 </div>
 
                 <div class="mb-3">
