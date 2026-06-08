@@ -8,8 +8,8 @@ Chào mọi người! Đây là đồ án môn **Lập trình Web** của nhóm 
 > * **Lời khuyên:** Các bạn nên cố gắng làm đồ án thực tế hơn và chăm chút giao diện đẹp hơn tụi mình (đừng làm đơn giản quá như nhóm mình nhé 😅) vì thầy sẽ chấm điểm dựa trên mức độ thực tế và tính thẩm mỹ của đồ án, làm đẹp và thực tế chắc chắn sẽ được điểm cao hơn. Và đặc biệt, **nhớ học lý thuyết thật kỹ** trước khi thi để tự tin trả lời và đạt điểm tối đa nha!
 
 ### 👥 Thành viên nhóm (My Teammates)
-* **Ngochai0802**
-* **BLG482**
+* **Ngochai0802 ( Nguyễn Ngọc Hải )** 
+* **BLG482 (Lưu Văn Gia Bảo )**
 
 ---
 
